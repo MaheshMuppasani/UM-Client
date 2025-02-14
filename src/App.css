@@ -1,0 +1,291 @@
+html {
+  font-size: 0.94rem;
+}
+.App {
+  height: 100vh;
+  color: rgb(49, 49, 49);
+}
+.profileRole svg {
+  height: 2rem;
+  width: 2rem;
+}
+.table-responsive > table .dropdown {
+  position: static;
+}
+.app-root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-x: hidden;
+}
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.app-brand-container{
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  margin: 0 50px;
+}
+.socialHandles a{
+  border-radius: 100%;
+  /* background: #fff; */
+}
+.socialHandles svg{
+  height: 2rem;
+  width: 2rem;
+}
+/* Login */
+.login-register {
+  height: 100%;
+}
+
+.login-form,
+.student-register {
+  border: 2px solid #becfdb;
+  min-width: 350px;
+}
+.login-form .submit,
+.student-register .submit {
+  margin-left: auto;
+  display: block;
+}
+.login-form form {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+/* Student Registration */
+.student-register > form {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 650px;
+  /* gap: 10px; */
+  justify-content: space-between;
+}
+.student-register > form .input {
+  width: 300px;
+}
+
+/* Navbar styles */
+.burger > div {
+  height: 3px;
+  width: 20px;
+  border-radius: 5px;
+  background-color: #fff;
+}
+.app-header {
+  background-color: #3a85f1;
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+/* Profile Icon Styles */
+.profile-icon {
+  height: 45px;
+  width: 45px;
+}
+/* App container styles */
+.app-container {
+  display: flex;
+  overflow-x: hidden;
+  flex: 1 1 auto;
+  height: 1px;
+}
+.custom-chip {
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+  background-color: rgb(25, 118, 210);
+}
+.custom-chip .chip-text {
+  margin: 0 5px;
+}
+.custom-chip .btn-close {
+  background-color: #fff !important;
+  padding: 4px !important;
+  border-radius: 50%;
+  font-size: 0.5rem;
+}
+.coursesearchDropDown .list-unstyled {
+  height: 200px;
+  overflow-y: scroll;
+}
+#calendar-app .calender-application .navbar {
+  display: none !important;
+}
+.app-container-body {
+  padding: 15px 30px;
+  flex: 1;
+  display: flex;
+  overflow-x: hidden;
+  flex: 1 1 auto;
+  flex-direction: column;
+  position: relative;
+}
+
+.calendar-container{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.maxHeight, .app-container-body > div{
+  display: flex;
+  overflow-x: hidden;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+/* sideNav Styles */
+.sideNav {
+  padding: 0px 0px 15px 0px;
+  border-right: 1px solid lightgrey;
+  font-size: 1.05rem;
+}
+
+.sideNav a.list-group-item {
+  padding: 15px 30px;
+}
+.sideNav a.list-group-item.active {
+  background-color: #d2e5ff;
+  color: #217eff;
+}
+/* Student Profile */
+.studentInfo {
+  width: 50% !important;
+}
+.studentInfo td {
+  border: 0.7px solid rgb(222, 226, 230) !important;
+}
+
+.tableGroupLabel {
+  background-color: #dbdbdb;
+  /* color: #fff; */
+}
+
+.roleSelectBtnGroup button * {
+  pointer-events: none !important;
+}
+
+.courseCard {
+  cursor: pointer;
+}
+
+.courseCard:hover {
+  background-color: #e7f1ff;
+}
+.courseCard:active, .courseCard.active {
+  background-color: #d3e4fb;
+}
+
+.table-cell {
+  white-space: nowrap; /* Prevent text from wrapping to a new line */
+  overflow: hidden; /* Hide the overflowed text */
+  text-overflow: ellipsis;
+  width: 150px; /* Add the ellipsis (...) */
+  max-width: 150px; /* Set a maximum width for the column */
+}
+.courseTable,
+.programsTable {
+  height: 400px;
+  overflow-y: scroll;
+  position: relative;
+}
+.courseTable .noRecordsPlaceholder,
+.programsTable .noRecordsPlaceholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.courseTable tr {
+  cursor: pointer;
+}
+.admin-course-table td {
+  text-align: center !important;
+}
+.cw-100 {
+  width: 100px;
+}
+
+.cw-150 {
+  width: 150px;
+}
+.cw-200 {
+  width: 200px;
+}
+
+.addCourseContentForm .ql-container {
+  height: 220px;
+}
+.addCourseForm {
+  height: 450px;
+}
+.addCourseForm .form-label {
+  font-size: 0.9rem;
+  color: gray;
+}
+.sectionClick {
+  cursor: pointer;
+}
+.courseContent {
+  margin-bottom: 16px;
+}
+.courseContent .body {
+  padding: 0 65px;
+}
+.clickLink {
+  cursor: pointer;
+}
+.courseContent:hover .clickLink {
+  text-decoration: underline;
+}
+.courseContentHeader svg.bi {
+  height: 30px;
+  width: 30px;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.navbackbtn {
+  border: 1px solid rgb(188, 188, 188) !important;
+}
+.TextwithLink svg {
+  width: 25px;
+  height: 25px;
+}
+.content-body > p {
+  margin: 0 !important;
+}
+.course-file {
+  padding: 10px 20px;
+}
+.course-file:hover {
+  background-color: #d9e4ec;
+  transition: all 0.2s ease-in-out;
+  border-radius: 5px;
+}
+
+.course-file:active {
+  background-color: #becfdb;
+}
