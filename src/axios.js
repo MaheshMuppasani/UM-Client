@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = process.env.PROD_API_URL;
+const baseURL = 'https://um-server-one.vercel.app/';
 
 export const getToken = () => localStorage.getItem("access_token") || null;
 
