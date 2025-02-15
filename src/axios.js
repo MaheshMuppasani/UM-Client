@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = "http://somethuppasLink.com/";
+const baseURL = process.env.PROD_API_URL;
 
 export const getToken = () => localStorage.getItem("access_token") || null;
 
