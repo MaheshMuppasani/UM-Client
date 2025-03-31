@@ -105,11 +105,7 @@ const Login = (props) => {
     const forgotPassword = (e) => {
         e.stopPropagation();
         e.preventDefault();
-        const id = addToast(<div>
-                <div>Contact the help desk to reset your password.</div>
-                <div>Telephone: +1 (989) 000-0000</div>
-                <div>Availability: All days 24/7</div>
-                </div>, 'success', null, false, toastID)
+        const id = addToast(userFeedback.forgotPW, feedBackType.success, 5000, true, toastID)
         setToastID(id);
     }
 

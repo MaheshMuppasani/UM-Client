@@ -1,6 +1,6 @@
 import Toast from 'react-bootstrap/Toast';
 import { ProgressBar, ToastContainer } from "react-bootstrap";
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 const ToastContext = createContext();
 
@@ -23,28 +23,34 @@ const getTimeAgo = (timestamp) => {
 const ToastWithProgress = (props) => {
     const { toast, setToasts } = props;
     const [progress, setProgress] = useState(100);
+    const intervalRef = useRef();
 
     useEffect(() => {
         if(!toast.duration) return;
         const interval = 50; // Update every 50ms
         const totalDuration = toast.duration;
         const startTime = toast.startTime - 350;
-        const timer = setInterval(() => {
+        intervalRef.current = setInterval(() => {
             const elapsed = Date.now() - startTime;
             const remaining = Math.max(totalDuration - elapsed, 0);
             setProgress((remaining / totalDuration) * 100);
 
-            if (remaining === 0) clearInterval(timer);
+            if (remaining <= 0) clearInterval(intervalRef.current);
         }, interval);
         
-        return () => clearInterval(timer); // Clean up on unmount
+        return () => clearInterval(intervalRef.current); // Clean up on unmount
     }, [toast.duration, toast.startTime]);
+
+    const handleClose = () => {
+        clearInterval(intervalRef.current);
+        setToasts(prevToasts => prevToasts.filter(t => t.id !== toast.id));
+    }
 
     return (
         <Toast
             animation={true}
             bg={toast.variant.toLowerCase()}
-            onClose={() => setToasts(prevToasts => prevToasts.filter(t => t.id !== toast.id))}
+            onClose={handleClose}
         >
             <Toast.Header>
                 <strong className="me-auto">Notification</strong>
@@ -54,26 +60,24 @@ const ToastWithProgress = (props) => {
                 {toast.message}
             </Toast.Body>
             <ProgressBar
-                    now={progress}
-                    // className="mt-2"
-                    variant={toast.variant.toLowerCase()}
-                    style={{ height: '5px' }}
-                />
+                now={progress}
+                // className="mt-2"
+                variant={toast.variant.toLowerCase()}
+                style={{ height: '5px' }}
+            />
         </Toast>
     );
 }
 
 export const ToastProvider = ({ children }) => {
     const [toasts, setToasts] = useState([]);
+    const toastRefreshRef = useRef();
 
     const addToast = useCallback((message, variant = 'success', duration = 3000, autoClose = true, toastID = null) => {
 
         const id = Date.now();
         setToasts(prevToasts => {
-            let tempToasts = [...prevToasts];
-            if (toastID) {
-                tempToasts = tempToasts.filter(t => t.id !== toastID)
-            }
+            const tempToasts = prevToasts.filter(t => t.id !== toastID);
             return [
                 ...tempToasts,
                 { id, message, variant, startTime: Date.now(), duration }
@@ -89,6 +93,16 @@ export const ToastProvider = ({ children }) => {
         return id;
     }, []);
 
+    useEffect(() => {
+        if(!toasts.length) return;
+        const interval = 10000; // Update every 10s
+        toastRefreshRef.current = setInterval(() => {
+            setToasts(prevToasts => [...prevToasts]);
+        }, interval);
+        
+        return () => clearInterval(toastRefreshRef.current); // Clean up on unmount
+    }, [toasts]);
+
     const clearToast = useCallback((id) => {
         if(id){
             setToasts(prevToasts => prevToasts.filter(toast =>  toast.id !== id))
@@ -100,7 +114,7 @@ export const ToastProvider = ({ children }) => {
         <ToastContext.Provider value={{ addToast, clearToast }}>
             {children}
             {/* Toast Container */}
-            <ToastContainer position="top-center" className="p-4">
+            <ToastContainer position="top-end" className="p-4">
                 {toasts.map(toast => (
                     <ToastWithProgress key={toast.id} setToasts={setToasts} toast={toast}/>
                 ))}

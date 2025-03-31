@@ -237,13 +237,47 @@ export const localStoreProperties = {
     ROLE: 'role'
 }
 
+const adminContact = {
+    email: 'mahesh.muppasani007@gmail.com',
+}
+
+const emailTemplates = {
+    dbErrorEmailTemp: {
+        subject: "DB Hibernation Issue (University Application) - Wanted To Check Your Project",
+        body: "Hi Mahesh, I wanted to check your project but the system notified me that the database is in hibernation mode. Could you please fix that and let me know so that I would explore your application. Thanks in advance!"
+    },
+    resetPWEmailTemp: {
+        subject: "Password Reset (University Application) - [your username here]",
+        body: "Hi Mahesh, I forgot my password with the username: (type your username) which I would like to reset. Thanks in advance!"
+    }
+}
+
 export const userFeedback = {
     emptyEmail: "Please provide your email",
     invalidEmail: "Invalid email address",
     emptyPassword: "Please provide your password",
-    loginSuccess: "Login Successful"
+    loginSuccess: "Login Successful",
+    forgotPW: 
+    <div>
+        <div>Contact help desk to reset your password.</div>
+        <div>Email:{" "} 
+            <a href={`mailto:${adminContact.email}?subject=${emailTemplates.resetPWEmailTemp.subject}
+                &body=${emailTemplates.resetPWEmailTemp.body}`} style={{color: "#fff"}} target="">{adminContact.email}
+            </a>
+        </div>
+    </div>,
+    databaseError: 
+    <div>
+        <div>Database set to hybernate! Site may not work properly!</div>
+        <div>Help Desk:{" "}
+            <a href={`mailto:${adminContact.email}?subject=${emailTemplates.dbErrorEmailTemp.subject}
+                &body=${emailTemplates.dbErrorEmailTemp.body}`} style={{color: "#fff"}} target="">{adminContact.email}
+            </a>
+        </div>
+    </div>,
 }
 
 export const feedBackType = {
-    success: "success"
+    success: "Success",
+    error: "Danger",
 }
