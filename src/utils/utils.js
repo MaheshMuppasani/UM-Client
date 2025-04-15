@@ -74,5 +74,3 @@ export function getColorForGrade(grade, maxScore) {
     // Return the RGB color as a string
     return `rgba(${red * 1.5}, ${green * 1.7}, 0, 0.8)`;
 }
-
-// export function 

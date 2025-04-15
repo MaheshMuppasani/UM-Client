@@ -20,7 +20,6 @@ const inputFieldIDs = {
     startSemester: 'StartSemesterID',
     exampleInputPassword1: 'passwordHash',
     confirmPW: 'confirmPW',
-    pwError: 'pwError',
     emailError: 'emailError'
 }
 
@@ -38,131 +37,184 @@ const RegisterStudent = (props) => {
 
     const { programTypes, programs, semesters } = constants;
 
-    const [formState, setFormState] = useState(
-        {
-            [inputFieldIDs.fname]: "",
-            fNameError: "",
-            [inputFieldIDs.lname]: "",
-            lNameError: "",
-            [inputFieldIDs.dob]: null,
-            [inputFieldIDs.email]: "",
-            [inputFieldIDs.phone]: "",
-            [inputFieldIDs.address]: "",
-            [inputFieldIDs.ProgramType]: null,
-            programTypeError: "",
-            [inputFieldIDs.startSemester]: null,
-            semesterError: "",
-            [inputFieldIDs.program]: null,
-            programError: "",
-            [inputFieldIDs.exampleInputPassword1]: "",
-            passWordError: "",
-            [inputFieldIDs.confirmPW]: "",
-            [inputFieldIDs.pwError]: false,
-            [inputFieldIDs.emailError]: "",
-        });
+    // Validation constants
+    const MIN_NAME_LENGTH = 2;
+    const MAX_NAME_LENGTH = 30;
+    const MIN_ADDRESS_LENGTH = 5;
+    const MAX_ADDRESS_LENGTH = 50;
+    const MIN_PW_LENGTH = 5;
+    const MAX_PW_LENGTH = 15;
+    const PHONE_REGEX = /^\+\d{1,3}-\d{7,15}$/; // +[1-3 digits]-[7-15 digits]
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const [formState, setFormState] = useState({
+        [inputFieldIDs.fname]: "",
+        [inputFieldIDs.lname]: "",
+        [inputFieldIDs.dob]: null,
+        [inputFieldIDs.email]: "",
+        [inputFieldIDs.phone]: "",
+        [inputFieldIDs.address]: "",
+        [inputFieldIDs.ProgramType]: null,
+        [inputFieldIDs.startSemester]: null,
+        [inputFieldIDs.program]: null,
+        [inputFieldIDs.exampleInputPassword1]: "",
+        [inputFieldIDs.confirmPW]: "",
+        [inputFieldIDs.emailError]: "",
+    });
+
+    const [errors, setErrors] = useState({
+        [inputFieldIDs.fname]: "",
+        [inputFieldIDs.lname]: "",
+        [inputFieldIDs.dob]: "",
+        [inputFieldIDs.email]: "",
+        [inputFieldIDs.phone]: "",
+        [inputFieldIDs.address]: "",
+        [inputFieldIDs.ProgramType]: "",
+        [inputFieldIDs.program]: "",
+        [inputFieldIDs.startSemester]: "",
+        [inputFieldIDs.exampleInputPassword1]: "",
+        [inputFieldIDs.confirmPW]: ""
+    });
 
     const updateInput = (e) => {
-        const tempForm = { ...formState };
         const value = e.target.value;
         const property = e.target.id;
 
-        setFormState({
-            ...tempForm,
+        setFormState(prev => ({
+            ...prev,
             [property]: value
-        })
-    }
+        }));
 
-    const validateForm = (formState) => {
-        let validationError = false;
-        if (!formState[inputFieldIDs.fname]) {
-            validationError = true;
-            formState.fNameError = "First name is required!"
-        } else {
-            formState.fNameError = "";
+        // Clear errors as user types
+        if (errors[property]) {
+            setErrors(prev => ({
+                ...prev,
+                [property]: ""
+            }));
         }
-        if (!formState[inputFieldIDs.lname]) {
-            validationError = true;
-            formState.lNameError = "First name is required!";
-        } else {
-            formState.lNameError = "";
-        }
-        if (!formState[inputFieldIDs.email]) {
-            validationError = true;
-            formState[inputFieldIDs.emailError] = "Email is required!"
-        } else if (!validateEmail(formState[inputFieldIDs.email])) {
-            validationError = true;
-            formState[inputFieldIDs.emailError] = "Invalid email address!"
-        } else {
-            formState[inputFieldIDs.emailError] = ""
-        }
-        if (!formState[inputFieldIDs.ProgramType]) {
-            validationError = true;
-            formState.programTypeError = "Please choose a program type!"
-        } else {
-            formState.programTypeError = ""
-        }
-        if (!formState[inputFieldIDs.program]) {
-            validationError = true;
-            formState.programError = "Please choose a program!"
-        } else {
-            formState.programError = "";
-        }
-        if (!formState[inputFieldIDs.startSemester]) {
-            validationError = true;
-            formState.semesterError = "Please choose a semester!"
-        } else {
-            formState.semesterError = ""
-        }
-        if (!formState[inputFieldIDs.exampleInputPassword1]) {
-            validationError = true;
-            formState.passWordError = "Password is required!"
-        } else {
-            formState.passWordError = ""
-        }
-        if (formState[inputFieldIDs.exampleInputPassword1]) {
-            if (!formState[inputFieldIDs.confirmPW]) {
-                validationError = true;
-                formState[inputFieldIDs.pwError] = "Please Confirm Your Password!"
-            } else if (formState[inputFieldIDs.confirmPW] !== formState[inputFieldIDs.exampleInputPassword1]) {
-                validationError = true;
-                formState[inputFieldIDs.pwError] = "Passwords do not match!"
-            } else {
-                formState[inputFieldIDs.pwError] = ""
+
+        // handling for password matching
+        if (property === inputFieldIDs.exampleInputPassword1) {
+            if (value.length >= MIN_PW_LENGTH && value.length <= MAX_PW_LENGTH) {
+                setErrors(prev => ({
+                    ...prev,
+                    [inputFieldIDs.exampleInputPassword1]: "",
+                    [inputFieldIDs.confirmPW]: value === formState[inputFieldIDs.confirmPW] ? "" : prev[inputFieldIDs.confirmPW]
+                }));
+            }
+        } else if (property === inputFieldIDs.confirmPW) {
+            if (value === formState[inputFieldIDs.exampleInputPassword1]) {
+                setErrors(prev => ({
+                    ...prev,
+                    [inputFieldIDs.exampleInputPassword1]: "",
+                    [inputFieldIDs.confirmPW]: ""
+                }));
             }
         }
-        return [formState, validationError];
+    }
+
+    const validateForm = () => {
+        let valid = true;
+        const newErrors = { ...errors };
+
+        // Validate first name
+        if (formState[inputFieldIDs.fname].trim().length < MIN_NAME_LENGTH || 
+            formState[inputFieldIDs.fname].trim().length > MAX_NAME_LENGTH) {
+            valid = false;
+            newErrors[inputFieldIDs.fname] = `First name must be between ${MIN_NAME_LENGTH} and ${MAX_NAME_LENGTH} characters`;
+        }
+
+        // Validate last name
+        if (formState[inputFieldIDs.lname].trim().length < MIN_NAME_LENGTH || 
+            formState[inputFieldIDs.lname].trim().length > MAX_NAME_LENGTH) {
+            valid = false;
+            newErrors[inputFieldIDs.lname] = `Last name must be between ${MIN_NAME_LENGTH} and ${MAX_NAME_LENGTH} characters`;
+        }
+
+        // Validate date of birth
+        if (!formState[inputFieldIDs.dob]) {
+            valid = false;
+            newErrors[inputFieldIDs.dob] = "Date of birth is required";
+        } else if (new Date(formState[inputFieldIDs.dob]) >= new Date()) {
+            valid = false;
+            newErrors[inputFieldIDs.dob] = "Date of birth must be in the past";
+        }
+
+        // Validate email
+        if (!EMAIL_REGEX.test(formState[inputFieldIDs.email])) {
+            valid = false;
+            newErrors[inputFieldIDs.email] = "Please enter a valid email address";
+        }
+
+        // Validate phone
+        if (!PHONE_REGEX.test(formState[inputFieldIDs.phone])) {
+            valid = false;
+            newErrors[inputFieldIDs.phone] = "Phone must be in format +(country code)-(number)";
+        }
+
+        // Validate address
+        if (formState[inputFieldIDs.address].trim().length < MIN_ADDRESS_LENGTH || 
+            formState[inputFieldIDs.address].trim().length > MAX_ADDRESS_LENGTH) {
+            valid = false;
+            newErrors[inputFieldIDs.address] = `Address must be between ${MIN_ADDRESS_LENGTH} and ${MAX_ADDRESS_LENGTH} characters`;
+        }
+
+        // Validate program type
+        if (!formState[inputFieldIDs.ProgramType] || formState[inputFieldIDs.ProgramType] == 0) {
+            valid = false;
+            newErrors[inputFieldIDs.ProgramType] = "Please select a program type";
+        }
+
+        // Validate program
+        if (!formState[inputFieldIDs.program] || formState[inputFieldIDs.program] == 0) {
+            valid = false;
+            newErrors[inputFieldIDs.program] = "Please select a program";
+        }
+
+        // Validate start semester
+        if (!formState[inputFieldIDs.startSemester] || formState[inputFieldIDs.startSemester] == 0) {
+            valid = false;
+            newErrors[inputFieldIDs.startSemester] = "Please select a start semester";
+        }
+
+        // Validate password
+        if (formState[inputFieldIDs.exampleInputPassword1].length < MIN_PW_LENGTH || 
+            formState[inputFieldIDs.exampleInputPassword1].length > MAX_PW_LENGTH) {
+            valid = false;
+            newErrors[inputFieldIDs.exampleInputPassword1] = `Password must be between ${MIN_PW_LENGTH} and ${MAX_PW_LENGTH} characters`;
+        } else if (formState[inputFieldIDs.exampleInputPassword1] !== formState[inputFieldIDs.confirmPW]) {
+            valid = false;
+            newErrors[inputFieldIDs.exampleInputPassword1] = "Passwords do not match";
+            newErrors[inputFieldIDs.confirmPW] = "Passwords do not match";
+        }
+
+        setErrors(newErrors);
+        return valid;
     }
 
     const register = async (e) => {
         e.preventDefault();
-        const [validatedForm, validationError] = validateForm({ ...formState });
-        if (validationError) {
-            setFormState(validatedForm);
+        
+        if (!validateForm()) {
             return;
         }
+
         const url = URLS.register;
         const data = { ...formState }
         delete data[inputFieldIDs.confirmPW];
-        delete data[inputFieldIDs.pwError];
         delete data[inputFieldIDs.emailError];
-        delete data.fNameError;
-        delete data.lNameError;
-        delete data.programTypeError;
-        delete data.programError;
-        delete data.semesterError;
-        delete data.passWordError;
 
         try {
-            const response = await axiosInstance.post(url, data)
+            await axiosInstance.post(url, data)
             addToast("Registration Successful! Login using your credentials!", 'success')
             history.push("/login")
         } catch (err) {
             if (err.status = 409) {
                 const data = err.data;
-                setFormState({
-                    ...formState,
+                setFormState(prev => ({
+                    ...prev,
                     [inputFieldIDs.emailError]: data
-                })
+                }))
             }
             console.log(err);
         }
@@ -172,191 +224,187 @@ const RegisterStudent = (props) => {
 
     return (
         <div className="login-register d-flex flex-column justify-content-center">
-            <div className='maxHeight d-flex align-items-center justify-content-center pt-5' style={{ fontSize: '0.8em' }}>
+            <div className='maxHeight d-flex align-items-center justify-content-center pt-5' style={{ fontSize: '0.95em' }}>
                 <div className='student-register p-4 rounded my-3' style={{position: 'relative'}}>
                     <p className="text-body-secondary text-center mb-4"><h3>New Student Registration</h3></p>
                     <form>
-                        <div className="mb-3 input">
-                            <label for={inputFieldIDs.fname} className="form-label">First Name <span className="text-danger">*</span></label>
+                        <div className=" input">
+                            <label htmlFor={inputFieldIDs.fname} className="form-label">First Name <span className="text-danger">*</span></label>
                             <input
                                 type="text"
                                 value={formState[inputFieldIDs.fname]}
                                 onChange={updateInput}
-                                className={`form-control ${formState.fNameError ? 'is-invalid' : ""}`}
+                                className={`form-control ${errors[inputFieldIDs.fname] ? 'is-invalid' : ''}`}
                                 id={inputFieldIDs.fname}
                             />
-                            <div id="validationFNameFeedback" class={`${formState.fNameError ? "invalid-feedback" : ""}`}>
-                                {
-                                    formState.fNameError
-                                        ? formState.fNameError
-                                        : <span aria-hidden="true" className="invisible">.</span>
-                                }
+                            <div className={`${errors[inputFieldIDs.fname] ? "invalid-feedback" : ""}`}>
+                                {errors[inputFieldIDs.fname] 
+                                    ? errors[inputFieldIDs.fname] 
+                                    : <span aria-hidden="true" className="invisible">.</span>}
                             </div>
                         </div>
-                        <div className="mb-3 input">
-                            <label for={inputFieldIDs.lname} className="form-label">Last Name <span className="text-danger">*</span></label>
+                        <div className=" input">
+                            <label htmlFor={inputFieldIDs.lname} className="form-label">Last Name <span className="text-danger">*</span></label>
                             <input
                                 type="text"
                                 value={formState[inputFieldIDs.lname]}
                                 onChange={updateInput}
-                                className={`form-control ${formState.lNameError ? 'is-invalid' : ""}`}
+                                className={`form-control ${errors[inputFieldIDs.lname] ? 'is-invalid' : ''}`}
                                 id={inputFieldIDs.lname}
                             />
-                            <div id="validationLNameFeedback" class={`${formState.lNameError ? "invalid-feedback" : ""}`}>
-                                {
-                                    formState.lNameError
-                                        ? formState.lNameError
-                                        : <span aria-hidden="true" className="invisible">.</span>
-                                }
+                            <div className={`${errors[inputFieldIDs.lname] ? "invalid-feedback" : ""}`}>
+                                {errors[inputFieldIDs.lname] 
+                                    ? errors[inputFieldIDs.lname] 
+                                    : <span aria-hidden="true" className="invisible">.</span>}
                             </div>
                         </div>
-                        <div className="mb-3 input">
-                            <label for={inputFieldIDs.dob} className="form-label">Date Of Birth</label>
+                        <div className=" input">
+                            <label htmlFor={inputFieldIDs.dob} className="form-label">Date Of Birth <span className="text-danger">*</span></label>
                             <input
                                 type="date"
                                 max={fetchDueDateTime(new Date()).formattedDate()}
                                 value={formState[inputFieldIDs.dob]}
                                 onChange={updateInput}
-                                className="form-control"
+                                className={`form-control ${errors[inputFieldIDs.dob] ? 'is-invalid' : ''}`}
                                 id={inputFieldIDs.dob}
                             />
+                            <div className={`${errors[inputFieldIDs.dob] ? "invalid-feedback" : ""}`}>
+                                {errors[inputFieldIDs.dob] 
+                                    ? errors[inputFieldIDs.dob] 
+                                    : <span aria-hidden="true" className="invisible">.</span>}
+                            </div>
                         </div>
-                        <div className="mb-3 input">
-                            <label for={inputFieldIDs.email} className="form-label">Email <span className="text-danger">*</span></label>
+                        <div className=" input">
+                            <label htmlFor={inputFieldIDs.email} className="form-label">Email <span className="text-danger">*</span></label>
                             <input
                                 type="email"
                                 value={formState[inputFieldIDs.email]}
                                 onChange={updateInput}
-                                className={`form-control ${formState[inputFieldIDs.emailError] ? 'is-invalid' : ""}`}
+                                className={`form-control ${errors[inputFieldIDs.email] ? 'is-invalid' : ''}`}
                                 id={inputFieldIDs.email}
                             />
-                            <div id="validationEmailFeedback" class={`${formState[inputFieldIDs.emailError] ? "invalid-feedback" : ""}`}>
-                                {
-                                    formState[inputFieldIDs.emailError]
-                                        ? formState[inputFieldIDs.emailError]
-                                        : ""
-                                }
+                            <div className={`${errors[inputFieldIDs.email] ? "invalid-feedback" : ""}`}>
+                                {errors[inputFieldIDs.email] 
+                                    ? errors[inputFieldIDs.email] 
+                                    : <span aria-hidden="true" className="invisible">.</span>}
                             </div>
                         </div>
-                        <div className="mb-3 input">
-                            <label for={inputFieldIDs.phone} className="form-label">Phone</label>
+                        <div className=" input">
+                            <label htmlFor={inputFieldIDs.phone} className="form-label">Phone <span className="text-danger">*</span></label>
                             <input
                                 type="text"
                                 value={formState[inputFieldIDs.phone]}
                                 onChange={updateInput}
-                                className="form-control"
+                                className={`form-control ${errors[inputFieldIDs.phone] ? 'is-invalid' : ''}`}
                                 id={inputFieldIDs.phone}
+                                placeholder="e.g. +1-9899999999"
                             />
+                            <div className={`${errors[inputFieldIDs.phone] ? "invalid-feedback" : ""}`}>
+                                {errors[inputFieldIDs.phone] 
+                                    ? errors[inputFieldIDs.phone] 
+                                    : <span aria-hidden="true" className="invisible">.</span>}
+                            </div>
                         </div>
-                        <div className="mb-3 input">
-                            <label for={inputFieldIDs.address} className="form-label">Address</label>
+                        <div className=" input">
+                            <label htmlFor={inputFieldIDs.address} className="form-label">Address <span className="text-danger">*</span></label>
                             <input
                                 type="text"
                                 value={formState[inputFieldIDs.address]}
                                 onChange={updateInput}
-                                className="form-control"
+                                className={`form-control ${errors[inputFieldIDs.address] ? 'is-invalid' : ''}`}
                                 id={inputFieldIDs.address}
                             />
+                            <div className={`${errors[inputFieldIDs.address] ? "invalid-feedback" : ""}`}>
+                                {errors[inputFieldIDs.address] 
+                                    ? errors[inputFieldIDs.address] 
+                                    : <span aria-hidden="true" className="invisible">.</span>}
+                            </div>
                         </div>
-                        <div className="mb-3 input">
-                            <label for={inputFieldIDs.ProgramType} className="form-label">Program Type <span className="text-danger">*</span></label>
+                        <div className=" input">
+                            <label htmlFor={inputFieldIDs.ProgramType} className="form-label">Program Type <span className="text-danger">*</span></label>
                             <select
-                                className={`form-select form-control ${formState.programTypeError ? 'is-invalid' : ""}`}
+                                className={`form-select form-control ${errors[inputFieldIDs.ProgramType] ? 'is-invalid' : ''}`}
                                 aria-label="Select a program type"
                                 value={formState[inputFieldIDs.ProgramType]}
                                 onChange={updateInput}
                                 id={inputFieldIDs.ProgramType}
                             >
                                 <option value={0}>Select a program type</option>
-                                {
-                                    programTypes && renderProgramTypes(programTypes)
-                                }
+                                {programTypes && renderProgramTypes(programTypes)}
                             </select>
-                            <div id="validationPtypeFeedback" class={`${formState.programTypeError ? "invalid-feedback" : ""}`}>
-                                {
-                                    formState.programTypeError
-                                        ? formState.programTypeError
-                                        : <span aria-hidden="true" className="invisible">.</span>
-                                }
+                            <div className={`${errors[inputFieldIDs.ProgramType] ? "invalid-feedback" : ""}`}>
+                                {errors[inputFieldIDs.ProgramType] 
+                                    ? errors[inputFieldIDs.ProgramType] 
+                                    : <span aria-hidden="true" className="invisible">.</span>}
                             </div>
                         </div>
-                        <div className="mb-3 input">
-                            <label for={inputFieldIDs.program} className="form-label">Program <span className="text-danger">*</span></label>
+                        <div className=" input">
+                            <label htmlFor={inputFieldIDs.program} className="form-label">Program <span className="text-danger">*</span></label>
                             <select
-                                className={`form-select form-control ${formState.programError ? 'is-invalid' : ""}`}
+                                className={`form-select form-control ${errors[inputFieldIDs.program] ? 'is-invalid' : ''}`}
                                 aria-label="Select a program"
                                 value={formState[inputFieldIDs.program]}
                                 onChange={updateInput}
                                 id={inputFieldIDs.program}
                             >
                                 <option value={0}>Select a program</option>
-                                {
-                                    programs && renderPrograms(programs, formState[inputFieldIDs.ProgramType])
-                                }
+                                {programs && renderPrograms(programs, formState[inputFieldIDs.ProgramType])}
                             </select>
-                            <div id="validationProgramFeedback" class={`${formState.programError ? "invalid-feedback" : ""}`}>
-                                {
-                                    formState.programError
-                                        ? formState.programError
-                                        : <span aria-hidden="true" className="invisible">.</span>
-                                }
+                            <div className={`${errors[inputFieldIDs.program] ? "invalid-feedback" : ""}`}>
+                                {errors[inputFieldIDs.program] 
+                                    ? errors[inputFieldIDs.program] 
+                                    : <span aria-hidden="true" className="invisible">.</span>}
                             </div>
                         </div>
-                        <div className="mb-3 input">
-                            <label for={inputFieldIDs.startSemester} className="form-label">Start Semester <span className="text-danger">*</span></label>
+                        <div className=" input">
+                            <label htmlFor={inputFieldIDs.startSemester} className="form-label">Start Semester <span className="text-danger">*</span></label>
                             <select
-                                className={`form-select form-control ${formState.semesterError ? 'is-invalid' : ""}`}
+                                className={`form-select form-control ${errors[inputFieldIDs.startSemester] ? 'is-invalid' : ''}`}
                                 aria-label="Select a start semester"
                                 value={formState[inputFieldIDs.startSemester]}
                                 onChange={updateInput}
                                 id={inputFieldIDs.startSemester}
                             >
                                 <option value={0}>Choose a start semester</option>
-                                {
-                                    semesters && renderSemesters(semesters)
-                                }
+                                {semesters && renderSemesters(semesters)}
                             </select>
-                            <div id="validationSemFeedback" class={`${formState.semesterError ? "invalid-feedback" : ""}`}>
-                                {
-                                    formState.semesterError
-                                        ? formState.semesterError
-                                        : <span aria-hidden="true" className="invisible">.</span>
-                                }
+                            <div className={`${errors[inputFieldIDs.startSemester] ? "invalid-feedback" : ""}`}>
+                                {errors[inputFieldIDs.startSemester] 
+                                    ? errors[inputFieldIDs.startSemester] 
+                                    : <span aria-hidden="true" className="invisible">.</span>}
                             </div>
                         </div>
-                        <div className="mb-3 input">
-                            <label for={inputFieldIDs.exampleInputPassword1} className="form-label">Password <span className="text-danger">*</span></label>
+                        <div className=" input">
+                            <label htmlFor={inputFieldIDs.exampleInputPassword1} className="form-label">Password <span className="text-danger">*</span></label>
                             <input
                                 type="password"
                                 value={formState[inputFieldIDs.exampleInputPassword1]}
                                 onChange={updateInput}
-                                className={`form-control ${formState.passWordError ? 'is-invalid' : ""}`}
+                                className={`form-control ${errors[inputFieldIDs.exampleInputPassword1] ? 'is-invalid' : ''}`}
                                 id={inputFieldIDs.exampleInputPassword1}
+                                placeholder={`${MIN_PW_LENGTH}-${MAX_PW_LENGTH} characters`}
                             />
-                            <div id="validationPWFeedback" class={`${formState.passWordError ? "invalid-feedback" : ""}`}>
-                                {
-                                    formState.passWordError
-                                        ? formState.passWordError
-                                        : <span aria-hidden="true" className="invisible">.</span>
-                                }
+                            <div className={`${errors[inputFieldIDs.exampleInputPassword1] ? "invalid-feedback" : ""}`}>
+                                {errors[inputFieldIDs.exampleInputPassword1] 
+                                    ? errors[inputFieldIDs.exampleInputPassword1] 
+                                    : <span aria-hidden="true" className="invisible">.</span>}
                             </div>
                         </div>
-                        <div className="mb-3 input">
-                            <label for={inputFieldIDs.confirmPW} id={`${inputFieldIDs.confirmPW}Label`} className="form-label">Confirm Password <span className="text-danger">*</span></label>
+                        <div className=" input">
+                            <label htmlFor={inputFieldIDs.confirmPW} id={`${inputFieldIDs.confirmPW}Label`} className="form-label">Confirm Password <span className="text-danger">*</span></label>
                             <input
                                 type="password"
                                 value={formState[inputFieldIDs.confirmPW]}
                                 onChange={updateInput}
-                                className={`form-control ${formState[inputFieldIDs.pwError] ? 'is-invalid' : ""}`}
+                                className={`form-control ${errors[inputFieldIDs.confirmPW] ? 'is-invalid' : ''}`}
                                 id={inputFieldIDs.confirmPW}
-                                aria-describedby={`${inputFieldIDs.confirmPW}Label validationPasswordFeedback`}
+                                aria-describedby={`${inputFieldIDs.confirmPW}Label`}
+                                placeholder="Confirm password"
                             />
-                            <div id="validationCPWFeedback" class={`${formState[inputFieldIDs.pwError] ? "invalid-feedback" : ""}`}>
-                                {
-                                    formState[inputFieldIDs.pwError]
-                                        ? formState[inputFieldIDs.pwError]
-                                        : <span aria-hidden="true" className="invisible">.</span>
-                                }
+                            <div className={`${errors[inputFieldIDs.confirmPW] ? "invalid-feedback" : ""}`}>
+                                {errors[inputFieldIDs.confirmPW] 
+                                    ? errors[inputFieldIDs.confirmPW] 
+                                    : <span aria-hidden="true" className="invisible">.</span>}
                             </div>
                         </div>
                     </form>

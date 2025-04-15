@@ -4,6 +4,7 @@ import axios from "../../axiosInstance.js";
 import { URLS } from "../../assets/urlConstants.js";
 import { useConstants } from "../../constantsProvider.js";
 import { useUserRole } from "../../userRole.js";
+import { adminContact } from "../../assets/constants.js";
 
 
 export const getDepartment = (dptId, departs) => {
@@ -23,12 +24,12 @@ const FacultyProfile = (props) => {
         const ProfileOptions = {
             'First Name': profile.FirstName,
             'Last Name': profile.LastName,
-            'Date of Birth': null,
+            'Date of Birth': 'NOT PROVIDED',
             'Email': profile.Email,
-            'Phone': profile.Phone,
-            'Address': profile.Address,
+            'Phone': profile.Phone || 'NOT PROVIDED',
+            'Address': profile.Address || 'NOT PROVIDED',
             'Department': getDepartment(profile.DepartmentID, departments),
-            'Designation': profile.Designation,
+            'Designation': profile.Designation || 'Faculty',
         }
         if(isAdmin()){
             ProfileOptions.Designation = "Administration"
@@ -38,11 +39,16 @@ const FacultyProfile = (props) => {
     }
 
     const getAcademicInfo = (profile) => {
-        return {
+        const info = {
             'Education': profile.Education,
             'Linkedin': null,
             'Website': null,
         }
+        if(isAdmin()){
+            info.Linkedin = <a href={adminContact.linkedin} target="_blank">{adminContact.linkedin}</a>;
+            info.Website = <a href={adminContact.website} target="_blank">{adminContact.website}</a>
+        }
+        return info;
     }
 
     useEffect(() => {
@@ -56,7 +62,7 @@ const FacultyProfile = (props) => {
 
     return (
         <div className="StudentProfile">
-            <h2 className="mb-4 d-flex gap-4 align-items-center">
+            <h2 className="mb-3 d-flex gap-4 align-items-center">
                 <p className="m-0 fw-lighter">Profile</p>
             </h2>
             <div>

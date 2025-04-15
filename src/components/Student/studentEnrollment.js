@@ -51,7 +51,7 @@ const CourseEnrollmentTable = (props) => {
                             <td>{Section_DeliveryMode}</td>
                             <td>
                                 {
-                                    (is_completed || deadlinePassed || disableActions) ? <span class="px-2 bg-dark-subtle text-white rounded">{Enrollment_Status}</span> : <button className="btn btn-sm btn-danger py-0" onClick={e => dropCourse(e, data)}>Drop</button>
+                                    (is_completed || deadlinePassed || disableActions) ? <span className="px-2 bg-dark-subtle text-white rounded">{Enrollment_Status}</span> : <button className="btn btn-sm btn-danger py-0" onClick={e => dropCourse(e, data)}>Drop</button>
                                 }
                             </td>
                         </tr>
@@ -70,7 +70,7 @@ export const CourseEnrollmentTables = (props) => {
     const { handleRowClick, disableActions = false } = props;
     return (
         <div>
-            <table class="table fw-light table-hover">
+            <table className="table fw-light table-hover">
                 <thead>
                     <tr>
                         <th scope="col">Course Code</th>
@@ -94,7 +94,7 @@ export const CourseEnrollmentTables = (props) => {
                                 </td>
                                 <CourseEnrollmentTable
                                     handleRowClick={handleRowClick}
-                                    courses={JSON.parse(courses)}
+                                    courses={courses}
                                     next={props.next}
                                     is_completed={is_completed}
                                     enrollment_deadline={enrollment_deadline}
@@ -207,7 +207,7 @@ const CourseSectionTable = (props) => {
                                             >Enroll</button>
                                         ) : (((!eligible_to_enroll && !enrolled) || !AvailableCount)
                                             ? <button className={`btn btn-sm  py-0 btn-info text-white`} onClick={handleUserRequest}>Request</button>
-                                            : (enrollment_status ? <span class="px-2 bg-dark-subtle text-white rounded">{enrollment_status}</span> : ""))
+                                            : (enrollment_status ? <span className="px-2 bg-dark-subtle text-white rounded">{enrollment_status}</span> : ""))
                                     )
                                 }
                             </td>
@@ -222,7 +222,7 @@ const CourseSectionTable = (props) => {
 const CourseSectionTables = (props) => {
     return (
         <div>
-            <table class="table fw-light align-middle">
+            <table className="table fw-light align-middle">
                 <thead>
                     <tr>
                         <th scope="col">Section ID</th>
@@ -337,8 +337,8 @@ const CourseSearch = (props) => {
             <div className="w-50 p-3">
                 <p className="mt-1 mb-3 fs-5 fw-lighter">Search Courses</p>
                 <form>
-                    <div class="mb-2">
-                        <label for={inputFieldIDs.semester} class="form-label">Academic Term<span className="text-danger"> *</span></label>
+                    <div className="mb-2">
+                        <label for={inputFieldIDs.semester} className="form-label">Academic Term<span className="text-danger"> *</span></label>
                         <select
                             className={`form-select form-control ${searchForm.termError ? 'is-invalid' : ""}`}
                             aria-label="Select academic term"
@@ -351,7 +351,7 @@ const CourseSearch = (props) => {
                                 semesters && renderSemesters(semesters)
                             }
                         </select>
-                        <div id="validationFNameFeedback" style={{ fontSize: '12px' }} class={`${searchForm.termError ? "invalid-feedback" : ""}`}>
+                        <div id="validationFNameFeedback" style={{ fontSize: '12px' }} className={`${searchForm.termError ? "invalid-feedback" : ""}`}>
                             {
                                 searchForm.termError
                                     ? searchForm.termError
@@ -359,8 +359,8 @@ const CourseSearch = (props) => {
                             }
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for={inputFieldIDs.department} class="form-label">Department</label>
+                    <div className="mb-3">
+                        <label for={inputFieldIDs.department} className="form-label">Department</label>
                         <select
                             className={`form-select form-control ${searchForm.searchError ? 'is-invalid' : ""}`}
                             aria-label="Select academic term"
@@ -374,8 +374,8 @@ const CourseSearch = (props) => {
                             }
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label for="courseSearch" class="form-label">Key words</label>
+                    <div className="mb-3">
+                        <label for="courseSearch" className="form-label">Key words</label>
                         <input
                             type="text"
                             value={searchForm.courseSearch}
@@ -384,7 +384,7 @@ const CourseSearch = (props) => {
                             className={`form-control ${searchForm.searchError ? 'is-invalid' : ""}`}
                             id="courseSearch"
                         />
-                        <div id="validationFNameFeedback" style={{ fontSize: '12px' }} class={`${searchForm.searchError ? "invalid-feedback" : ""}`}>
+                        <div id="validationFNameFeedback" style={{ fontSize: '12px' }} className={`${searchForm.searchError ? "invalid-feedback" : ""}`}>
                             {
                                 searchForm.searchError
                                     ? searchForm.searchError
@@ -413,21 +413,21 @@ const StudentEnrollment = (props) => {
     }
     return (
         <div className="StudentProfile">
-            <h2 className="mb-4">
+            <h2 className="mb-3">
                 <p className="fw-lighter">Enrollments</p>
             </h2>
             <div>
-                <ul class="nav nav-tabs">
-                    <li class="nav-item w-50">
+                <ul className="nav nav-tabs">
+                    <li className="nav-item w-50">
                         <button
-                            class={`w-100 nav-link text-center ${tabSelected == 0 ? 'active' : ''}`}
+                            className={`w-100 nav-link text-center ${tabSelected == 0 ? 'active' : ''}`}
                             onClick={handleTabClick}
                             value={0}
                         >Search Courses and Enroll</button>
                     </li>
-                    <li class="nav-item w-50">
+                    <li className="nav-item w-50">
                         <button
-                            class={`w-100 nav-link text-center ${tabSelected == 1 ? 'active' : ''}`}
+                            className={`w-100 nav-link text-center ${tabSelected == 1 ? 'active' : ''}`}
                             onClick={handleTabClick}
                             value={1}
                         >My Enrollments</button>

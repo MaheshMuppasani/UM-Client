@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../axiosInstance";
 import { URLS } from "../../assets/urlConstants";
-// import DOMPurify from "dompurify";
 
 const RenderContentFiles = (props) => {
     const { content } = props;
@@ -22,9 +21,11 @@ const RenderContentFiles = (props) => {
     return (
         <div>
             <div className="mb-2">
-                <p className="mb-2 text-black-50">Files Attached:</p>
+                <p className="mb-2 text-black-50 d-inline-block">Files Attached:</p>
                 {
-                    fileURL && <a className="d-block course-file text-decoration-none" href={fileURL.url} download={fileURL.fileName} target="_blank">{fileURL.fileName}</a>
+                    fileURL 
+                    ? <a className="d-block course-file text-decoration-none" href={fileURL.url} download={fileURL.fileName} target="_blank">{fileURL.fileName}</a>
+                    : <div className="fw-light fst-italic text-secondary d-inline-block mx-2">None</div>
                 }
             </div>
         </div>

@@ -7,6 +7,31 @@ import axiosInstance from "../../../axiosInstance";
 import { useToast } from "../../../AppToast";
 import CustomDropDown from "./customCourseDropDown";
 
+export const MultiSelectedOptions = (props) => {
+    const { className = "d-flex gap-1 px-3 py-2", selectedOptions, textKey, removeOption, retainHeight = true } = props;
+    return (
+        (selectedOptions.length || retainHeight) && (
+            <div className={className}>
+            {
+                selectedOptions.length ? selectedOptions.map((option) => {
+                    return (
+                        <span key={option[textKey]} className="d-flex px-2 align-items-center badge rounded-pill custom-chip">
+                            <span className="chip-text">{option[textKey]}</span>
+                            <button type="button" className="btn-close p-0" aria-label="Close" onClick={e => removeOption(e, option)}></button>
+                        </span>
+                    )
+                }) : (
+                    retainHeight && <span className="d-flex px-2 align-items-center badge rounded-pill custom-chip invisible" aria-hidden="true">
+                        <span className="chip-text">.</span>
+                        <button type="button" className="btn-close p-0" aria-label="Close"></button>
+                    </span>
+                )
+            }
+        </div>
+        ) 
+    )
+}
+
 function compareArrays(arr1, arr2) {
     // If lengths are different, arrays are not equal
     if (arr1.length !== arr2.length) return false;
@@ -171,8 +196,9 @@ const AddCourseModal = (props) => {
         setSelectedPreReqs(temp);
     }
 
-    const updatePreRequisite = (e) => {
-        let courseId = e.target.getAttribute('value');
+    const updatePreRequisite = (e, course) => {
+        if(!course || !course.Course_ID) return;
+        let courseId = course?.Course_ID
         if (!courseId) return;
         courseId = Number(courseId);
 
@@ -255,7 +281,7 @@ const AddCourseModal = (props) => {
                                 onChange={e => setTitle(e.target.value)}
                                 className={`form-control ${formState.titleError ? 'is-invalid' : ""}`}
                             />
-                            <div class={`${formState.titleError ? "invalid-feedback" : ""}`}>
+                            <div className={`${formState.titleError ? "invalid-feedback" : ""}`}>
                                 {
                                     formState.titleError
                                         ? formState.titleError
@@ -264,20 +290,20 @@ const AddCourseModal = (props) => {
                             </div>
                         </div>
                         <div className="d-flex align-items-center flex-grow-1">
-                            <div class="form-check form-switch d-flex gap-2 align-items-center">
+                            <div className="form-check form-switch d-flex gap-2 align-items-center">
                                 <input
-                                    class="form-check-input"
+                                    className="form-check-input"
                                     style={{ width: "35px", height: "20px" }}
                                     type="checkbox" role="switch"
                                     id="flexSwitchCheckChecked"
                                     checked={programRequired}
                                     onChange={e => setProgramRequired(e.target.checked)}
                                 />
-                                <label class="form-check-label mt-1" for="flexSwitchCheckChecked">Program Required</label>
+                                <label className="form-check-label mt-1" for="flexSwitchCheckChecked">Program Required</label>
                             </div>
                         </div>
                     </Form.Group>
-                    <Form.Group className="TextwithLink mb-3 d-flex gap-3" controlId="exampleForm.ControlInput1">
+                    <Form.Group className="TextwithLink d-flex gap-3" controlId="exampleForm.ControlInput1">
                         <div className="flex-grow-1">
                             <Form.Label>Credits</Form.Label>
                             <Form.Control
@@ -287,7 +313,7 @@ const AddCourseModal = (props) => {
                                 onChange={e => setCourseCredits((Number(e.target.value) | 0) || "")}
                                 className={`form-control ${formState.creditsError ? 'is-invalid' : ""}`}
                             />
-                            <div class={`${formState.creditsError ? "invalid-feedback" : ""}`}>
+                            <div className={`${formState.creditsError ? "invalid-feedback" : ""}`}>
                                 {
                                     formState.creditsError
                                         ? formState.creditsError
@@ -306,7 +332,7 @@ const AddCourseModal = (props) => {
                                     departments?.map(d => <option key={d.Department_ID} value={d.Department_ID}>{d.Department_Name} [{d.Department_Code}]</option>)
                                 }
                             </Form.Select>
-                            <div class={`${formState.dptError ? "invalid-feedback" : ""}`}>
+                            <div className={`${formState.dptError ? "invalid-feedback" : ""}`}>
                                 {
                                     formState.dptError
                                         ? formState.dptError
@@ -330,7 +356,7 @@ const AddCourseModal = (props) => {
                                     programTypes?.map(pt => <option key={pt.ProgramType_ID} value={pt.ProgramType_ID}>{pt.ProgramType_Name}</option>)
                                 }
                             </Form.Select>
-                            <div class={`${formState.pTypeError ? "invalid-feedback" : ""}`}>
+                            <div className={`${formState.pTypeError ? "invalid-feedback" : ""}`}>
                                 {
                                     formState.pTypeError
                                         ? formState.pTypeError
@@ -349,7 +375,7 @@ const AddCourseModal = (props) => {
                                     renderPrograms(programs?.filter(p => !selectedDeptId ? p : selectedDeptId === p.DepartmentID), selectedPTypeId, departments)
                                 }
                             </Form.Select>
-                            <div class={`${formState.progError ? "invalid-feedback" : ""}`}>
+                            <div className={`${formState.progError ? "invalid-feedback" : ""}`}>
                                 {
                                     formState.progError
                                         ? formState.progError
@@ -358,18 +384,28 @@ const AddCourseModal = (props) => {
                             </div>
                         </div>
                     </Form.Group>
-                    <Form.Group className="mb-2 d-flex gap-3 align-items-baseline"
+                    <Form.Group className="d-flex gap-3 align-items-baseline"
                         controlId="exampleForm.ControlInput1">
                         <div>
                             <CustomDropDown
+                                className={`form-control coursesearchDropDown`}
                                 displayTitle={"Add Pre-Requistes"}
                                 options={preReqChoiceList}
-                                onSelectCallback={updatePreRequisite}
                                 selectedOptions={selectedPreReqs}
-                                className={`form-control coursesearchDropDown ${formState.preReqError ? 'is-invalid' : ""}`}
+                                onSelect={updatePreRequisite}
                                 autoClose="outside"
+                                maxSelect={5}
                             />
-                            <div class={`${formState.preReqError ? "invalid-feedback" : ""}`}>
+                            
+                        </div>
+                        <div className={`d-flex flex-grow-1 flex-column`}>
+                            <MultiSelectedOptions 
+                                className={`form-control d-flex align-items-baseline gap-1 flex-grow-1 flex-wrap rounded p-2 border ${formState.preReqError ? 'is-invalid border-danger' : ''}`}
+                                selectedOptions={selectedPreReqs}
+                                removeOption={handleRemovePreReq}
+                                textKey={'course_code'}
+                            />
+                            <div className={`${formState.preReqError ? "invalid-feedback" : ""}`}>
                                 {
                                     formState.preReqError
                                         ? formState.preReqError
@@ -377,25 +413,8 @@ const AddCourseModal = (props) => {
                                 }
                             </div>
                         </div>
-                        <div className={`d-flex align-items-baseline gap-1 flex-grow-1 rounded p-2 border ${formState.preReqError ? 'border-danger' : ''}`}>
-                            {
-                                selectedPreReqs.length ? selectedPreReqs.map((preReq) => {
-                                    return (
-                                        <span class="d-flex px-2 align-items-center badge rounded-pill custom-chip">
-                                            <span className="chip-text">{preReq.course_code}</span>
-                                            <button type="button" class="btn-close p-0" aria-label="Close" onClick={e => handleRemovePreReq(e, preReq)}></button>
-                                        </span>
-                                    )
-                                }) : (
-                                    <span class="d-flex px-2 align-items-center badge rounded-pill custom-chip invisible" aria-hidden="true">
-                                        <span className="chip-text">BIS-1</span>
-                                        <button type="button" class="btn-close p-0" aria-label="Close"></button>
-                                    </span>
-                                )
-                            }
-                        </div>
                     </Form.Group>
-                    <Form.Group className="TextwithLink mb-3 " controlId="exampleForm.ControlInput1">
+                    <Form.Group className="TextwithLink" controlId="exampleForm.ControlInput1">
                         <Form.Label>Course Description</Form.Label>
                         <Form.Control
                             as="textarea"
@@ -405,7 +424,7 @@ const AddCourseModal = (props) => {
                             onChange={e => setDescription(e.target.value)}
                             className={`form-control ${formState.descError ? 'is-invalid' : ""}`}
                         />
-                        <div class={`${formState.descError ? "invalid-feedback" : ""}`}>
+                        <div className={`${formState.descError ? "invalid-feedback" : ""}`}>
                             {
                                 formState.descError
                                     ? formState.descError

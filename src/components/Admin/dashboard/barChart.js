@@ -81,7 +81,7 @@ const options = {
     plugins: {
         title: {
             display: true,
-            text: 'Bar Chart Showing New Students By Semester',
+            text: 'Students Having Course Enrollments By Semester',
             position: 'bottom'
         },
         legend: {
@@ -105,7 +105,7 @@ const BarChart = () => {
         datasets: []
     })
     const [reportData, setReportData] = useState(null);
-    const [semesterLimit, setSemesterLimit] = useState(5)
+    const [semesterLimit, setSemesterLimit] = useState(10)
     const chartRef = useRef(null);
 
     const toggleLimit = () => setSemesterLimit((prevLimit) => prevLimit === 5 ? 10 : 5)
@@ -113,25 +113,11 @@ const BarChart = () => {
     const handleDownloadReport = (e) => {
         e.stopPropagation();
 
-        const chartInstance = ChartJS.getChart("myBarChart"); // Replace with your chart's ref or ID
-        const chartImageBase64 = chartInstance.toBase64Image();
-
         const data = reportData;
         const worksheet = XLSX.utils.json_to_sheet(data);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Enrollments");
 
-        const excelOutput = XLSX.write(workbook, {
-            bookType: "xlsx",
-            type: "binary",
-            Props: {
-                Images: [{ // Embedding the image into the Excel
-                    name: "BarChart",
-                    data: chartImageBase64,
-                    type: "image/png"
-                }]
-            }
-        });
         XLSX.writeFile(workbook, "SemesterEnrollments.xlsx");
     }
 
@@ -144,7 +130,7 @@ const BarChart = () => {
             let data = res.data || [];
             const labels = data.map(sem => capitalizeFirstLetter(sem.semester_name))
             const dataset = [{
-                label: "Total Students Enrolled",
+                label: "Total Students",
                 data: data.map(sem => sem.total_students),
                 backgroundColor: colors.slice(0, data.length),
                 borderColor: borderColor.slice(0, data.length),
@@ -160,11 +146,11 @@ const BarChart = () => {
         })
     }, [semesterLimit])
 
-    return <div>
+    return <div className='h-100'>
         <div className='d-flex justify-content-between'>
-            <button className='btn btn-sm' onClick={toggleLimit}>Last {semesterLimit === 5 ? 10 : 5} semester</button>
+            <button className='btn btn-sm text-primary mx-2' onClick={toggleLimit}>Last {semesterLimit === 5 ? 10 : 5} semester</button>
             <div>
-                <button className='btn btn-sm' onClick={handleDownloadReport}>Download Report</button>
+                <button className='btn btn-sm text-primary text-decoration-underline' onClick={handleDownloadReport}>Download Report</button>
             </div>
         </div>
         <Bar id="myBarChart" options={options} data={barData} plugins={barTitlePlugin} />

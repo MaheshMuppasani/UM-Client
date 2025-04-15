@@ -8,7 +8,7 @@ const AdminProgramsTable = (props) => {
     const { departments, programTypes } = constants;
 
     return (<div className="table-responsive border mt-4 courseTable">
-        <table class="table table-hover">
+        <table className="table table-hover">
             <thead className="table-primary" style={{ position: "sticky", top: '0' }}>
                 <tr>
                     <th className="table-cell cw-100">Program Name</th>

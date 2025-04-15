@@ -33,8 +33,8 @@ export const SectionEnrollmentsCard = (props) => {
     }, [Section_ID])
     return (
         <div className="card mb-2 maxHeight">
-            <div class="card-header fw-medium px-2">Enrollments Information</div>
-            <div class="card-body p-0 maxHeight">
+            <div className="card-header fw-medium px-2">Enrollments Information</div>
+            <div className="card-body p-0 maxHeight">
                 {
                     enrollments?.length ? (<div>
                         <table className="table table-hover">
@@ -97,7 +97,7 @@ export const FacultyInfoCard = (props) => {
 
     return (
         <div className="card mb-2">
-            <div class="card-header fw-medium px-2">Faculty Information</div>
+            <div className="card-header fw-medium px-2">Faculty Information</div>
             <div className="maxHeight" style={{ minHeight: '150px' }}>
                 {
                     faculty ? (
@@ -110,7 +110,7 @@ export const FacultyInfoCard = (props) => {
                                     <span>Designation: {Designation || ""}</span>
                                 </div>
                             </div>
-                            <div class="card-body p-3 d-flex justify-content-between">
+                            <div className="card-body p-3 d-flex justify-content-between">
                                 <span>Name: {FirstName && LastName ? <span>{`${LastName}, ${FirstName}`}</span> : ""}</span>
                                 <a href={`mailto:${Email}`}><MailIcon /></a>
                             </div>

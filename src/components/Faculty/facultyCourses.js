@@ -31,9 +31,9 @@ const CourseSection = ({ section, handleSectionSelect, course, handleEdit, handl
 
     return (
         <div className={`card courseCard ${selectedSectionId===Section_ID? 'active' : ''}`} onClick={handleSection}>
-            <div class="card-body">
+            <div className="card-body">
                 <div className={`d-flex gap-5 flex-grow-1 justify-content-between`}>
-                    <h6 class="card-title d-flex gap-5">
+                    <h6 className="card-title d-flex gap-5">
                         <span className="p-0">
                             {course_code} {Course_Name} - Section: {Section_ID}
                         </span>
@@ -99,7 +99,7 @@ export const SemesterCourses = (props) => {
                                         return (
                                             <div key={courseID} className="my-2">
                                                 <p className="m-0 py-2 fs-5">{course_code} {Course_Name} [CR {CreditHours}]</p>
-                                                <CourseSections sections={JSON.parse(sections)} course={course} {...props} />
+                                                <CourseSections sections={sections} course={course} {...props} />
                                             </div>
                                         )
                                     })

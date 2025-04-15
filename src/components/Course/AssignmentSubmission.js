@@ -8,6 +8,7 @@ import { useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import { formDataHeaders, URLS } from "../../assets/urlConstants";
 import { useUserRole } from "../../userRole";
+import { fetchDueDateTime } from "../../utils/utils";
 
 const AssignmentSubmission = (props) => {
     const { submissions, cancelSubmission, exam_id, SectionID } = props;
@@ -15,11 +16,21 @@ const AssignmentSubmission = (props) => {
 
     const [value, setuserInfo] = useState('');
     const [file, setFile] = useState(null);
+    const [errors, setErrors] = useState({
+        value: ""
+    });
     const fileInputRef = useRef(null);
     const { addToast } = useToast();
 
+    const comments_min_length = 10;
+
+    const getPlainText = (html) => {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        return doc.body.textContent || '';
+    };
+
     const handleFileChange = (e) => {
-        const file = e.target.files[0]
+        const file = e.target.files[0];
         if (file) {
             const fileExtension = `.${file.name.split('.').pop().toLowerCase()}`;
             if (excludedExtensions.includes(fileExtension)) {
@@ -31,22 +42,55 @@ const AssignmentSubmission = (props) => {
                 return;
             }
         }
-        setFile(file)
+        setFile(file);
     };
+
+    const handleUserInfo = (text) => {
+        let editorPlainText = getPlainText(text).trim();
+        if(editorPlainText.length >= comments_min_length && errors.value){
+            setErrors({...errors, value: ""});
+        }
+        return setuserInfo(text);
+    }
+
+    const validateForm = () => {
+        let tempForm = { ...errors };
+        let valid = true;
+        let editorPlainText = getPlainText(value).trim();
+
+        // Validate comments (rich text)
+        if(editorPlainText.length < comments_min_length){
+            valid = false;
+            tempForm.value = `Comments should be at least ${comments_min_length} characters`;
+        } else {
+            tempForm.value = "";
+        }
+
+        return [valid, tempForm];
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         e.stopPropagation();
+        
+        const [validForm, tempForm] = validateForm();
+        setErrors(tempForm);
+        if(!validForm) return;
+
         let url = URLS.submitAssignment;
         const data = {
             exam_id: exam_id,
             section_id: SectionID,
             file: file,
             submission_text: value && value!=='<p><br></p>' ? value : null,
+            submitted_date: (function(){
+                let current_date = fetchDueDateTime(new Date());
+                return `${current_date.formattedDate()}T${current_date.formattedTime()}`
+            })() // get the current moment
         }
         axiosInstance.post(url, data, formDataHeaders)
             .then(res => {
-                cancelSubmission(e)
+                cancelSubmission(e); // close the submission window
                 addToast("Assignment submitted successfully!", 'success');
             })
     }
@@ -57,14 +101,20 @@ const AssignmentSubmission = (props) => {
 
     const isAllowSubmission = isStudent() && !submissions[0]?.submitted_date;
 
-    return ( <div>
+    return (
+        <div>
             <Form className="addCourseContentForm d-flex flex-column">
                 <Form.Group
-                    className="mb-3"
                     controlId="exampleForm.ControlTextarea1"
                 >
                     {
-                        submissions.length ? (submissions[0].file_id ? <RenderContentFiles content={{ file_id: submissions[0].file_id }} /> : <div className="fw-light">No files attached</div>) : (
+                        submissions.length ? 
+                            <p className="mb-2 text-black-50">Files Attached:
+                                {submissions[0].file_id ? 
+                                    <RenderContentFiles content={{ file_id: submissions[0].file_id }} /> 
+                                    : <div className="fw-light fst-italic text-secondary d-inline-block mx-2">None</div>}
+                            </p>
+                            : (
                             <>
                                 <Form.Label className="text-black-50">Choose or drag files here:</Form.Label>
                                 <Form.Control
@@ -75,19 +125,28 @@ const AssignmentSubmission = (props) => {
                                     onChange={handleFileChange}
                                     className="mb-3"
                                 />
-                            </>
-                        )
+                            </>)
                     }
-                    <Form.Label className="text-black-50">Submission comments or text:</Form.Label>
+                    <Form.Label className="text-black-50">Submission comments:</Form.Label>
                     {
                         submissions.length ? (submissions[0].submission_text ? <RenderContentBody contents={{ content_data: submissions[0].submission_text }} /> : <div className="fw-light">No comments</div>) : (
-                            <ReactQuill
-                                modules={module}
-                                theme="snow"
-                                value={value}
-                                placeholder="Write assignment comments or text"
-                                onChange={setuserInfo}
-                            />
+                            <>
+                                <ReactQuill
+                                    modules={module}
+                                    theme="snow"
+                                    value={value}
+                                    className={`${errors.value ? 'is-invalid' : ""}`}
+                                    placeholder="Write assignment comments"
+                                    onChange={handleUserInfo}
+                                />
+                                <div className={`${errors.value ? "invalid-feedback" : ""}`}>
+                                    {
+                                        errors.value
+                                            ? errors.value
+                                            : <span aria-hidden="true" className="invisible">.</span>
+                                    }
+                                </div>
+                            </>
                         )
                     }
                 </Form.Group>
@@ -98,7 +157,8 @@ const AssignmentSubmission = (props) => {
                     </div>
                 }
             </Form>
-        </div>);
+        </div>
+    );
 }
  
 export default AssignmentSubmission;

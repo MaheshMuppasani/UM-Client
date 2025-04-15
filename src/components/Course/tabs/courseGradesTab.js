@@ -28,7 +28,7 @@ const CourseGradesTab = (props) => {
 
     return (
         <div>
-            <div className="fs-4 mt-2 mb-4 d-flex justify-content-between align-items-center">
+            <div className="fs-4 my-2 d-flex justify-content-between align-items-center">
                 <div>Grades</div>
                 {
                     isFaculty() ? (<Button className="btn-sm" onClick={handlePostAllGrades}>Post All Grades</Button>) : ("")

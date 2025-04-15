@@ -89,7 +89,7 @@ const AssignmentSubmissionsTab = (props) => {
                     </div>
                 ) : (
                     <div className="maxHeight">
-                        <div className="fs-4 mt-2 mb-4 d-flex justify-content-between align-items-center">
+                        <div className="fs-4 my-2 mb-3 d-flex justify-content-between align-items-center">
                             <div>Assignment Submissions</div>
                         </div>
                         <div className="maxHeight">
@@ -124,14 +124,11 @@ const AssignmentSubmissionsTab = (props) => {
                                         <div>
                                             <Button type="submit" className="px-4" onClick={handleSearch} onSubmit={handleSearch}>Search</Button>
                                         </div>
-
-                                    </Form.Group>
-                                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea2">
                                     </Form.Group>
                                 </Form>
                             </div>
                             <div className="table-responsive mt-2 maxHeight border">
-                                <table class="table border table-hover">
+                                <table className="table border table-hover">
                                     <thead className="table-primary" style={{position:"sticky", top: '-2px', cursor: 'pointer'}}>
                                         <tr>
                                             <th style={{ width: '200px' }}>Student Name</th>
@@ -156,7 +153,7 @@ const AssignmentSubmissionsTab = (props) => {
                                                         <td>{StudentEmail}</td>
                                                         <td>{formatDateToLocaleString(ExamDueDate)}</td>
                                                         <td>{formatDateToLocaleString(SubmissionDate)}</td>
-                                                        <td>{(dateFormat(ExamDueDate) - dateFormat(SubmissionDate) >= 0 ? <span class="px-2 bg-success-subtle rounded">On Time</span> : <span class="px-2 bg-danger-subtle rounded">Late</span>)}</td>
+                                                        <td>{(dateFormat(ExamDueDate) - dateFormat(SubmissionDate) >= 0 ? <span className="px-2 bg-success-subtle rounded">On Time</span> : <span className="px-2 bg-danger-subtle rounded">Late</span>)}</td>
                                                         <td>{MaximumScore}</td>
                                                         <td>{GradeReceived || <span className="fw-light px-2 bg-warning-subtle rounded">Not Graded</span>}</td>
                                                     </tr>

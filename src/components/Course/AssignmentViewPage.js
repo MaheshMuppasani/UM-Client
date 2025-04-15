@@ -46,21 +46,20 @@ const AssignmentViewPage = (props) => {
     return (<div className="d-flex justify-content-center">
         <div className="d-flex w-100" style={{ maxWidth: '1200px' }}>
             <div style={{ width: '330px', position:'sticky', top: 0 }} className="py-2 px-4">
-                <h6 className="pb-3 mb-3 border-bottom">Assignment Information</h6>
-                <div>Assignment Due Date</div>
-                <div className="pb-3 mb-3 border-bottom fw-light">{formatDateToLocaleString(ExamDueDate)}</div>
+                <div className="fw-medium">Assignment Due Date</div>
+                <div className="pb-3 mb-3 border-bottom">{formatDateToLocaleString(ExamDueDate)}</div>
                 {
                     isStudent() ? (
                         <>
-                            <div>Attempts</div>
-                            <div className="pb-3 mb-3 border-bottom fw-light">{submissions.length ? `0 attempt left | ${submissions.length} submitted` : '1 attempt left'}</div>
+                            <div className="fw-medium">Attempts</div>
+                            <div className="pb-3 mb-3 border-bottom">{submissions.length ? `0 attempt left | ${submissions.length} submitted` : '1 attempt left'}</div>
                         </>
                     ) : ("")
                 }
                 {
                     submission ? (
                         <>
-                            <div>Last attempted on</div>
+                            <div className="fw-medium">Last attempted on</div>
                             <div className="pb-3 mb-3 border-bottom d-flex align-items-center gap-2">
                                 <div>{formatDateToLocaleString(submission.submitted_date)}</div>
                                 {(dateFormat(ExamDueDate) - dateFormat(submission.submitted_date) >= 0 ? <span class="px-3 bg-success-subtle rounded">On Time</span> : <span class="px-3 bg-danger-subtle rounded">Late</span>)}
@@ -68,26 +67,24 @@ const AssignmentViewPage = (props) => {
                         </>
                     ) : ("")
                 }
-                <div>Grading</div>
-                <div className="pb-3 mb-3 border-bottom fw-light d-flex">
+                <div className="fw-medium">Grading</div>
+                <div className="pb-3 mb-3 border-bottom d-flex">
                     <div style={{ borderRight: '1px solid lightgray', paddingRight: '10px' }}>Maximum Score</div>
                     <div style={{ paddingLeft: '10px' }}>{MaximumScore} points</div>
                 </div>
                 {
                     submission ? (
                         <div>
-                            <div>Grade Received</div>
-                            <div className="pb-3 mb-3 border-bottom fw-light">
+                            <div className="fw-medium">Grade Received</div>
+                            <div className="pb-3 mb-3 border-bottom">
                                 {
-                                    submission?.grade_received ? (<span class="badge px-3 mt-2 fs-6" style={{ backgroundColor: getColorForGrade(submission?.grade_received, MaximumScore) }}>{submission?.grade_received} / {MaximumScore}</span>) : <span className="mx-2 fw-light fst-italic">Not Graded</span>
+                                    submission?.grade_received ? (<span className="badge px-3 mt-2 fs-6" style={{ backgroundColor: getColorForGrade(submission?.grade_received, MaximumScore) }}>{submission?.grade_received} / {MaximumScore}</span>) : <span className="mx-2 fw-light fst-italic">Not Graded</span>
                                 }
 
                             </div>
                         </div>
                     ) : ("")
                 }
-
-
             </div>
             <div className="flex-grow-1 py-2 px-5" style={{ flex: 1, borderLeft: '1px solid lightgray' }}>
                 {
@@ -96,7 +93,7 @@ const AssignmentViewPage = (props) => {
                             <Accordion.Item eventKey="0">
                                 <Accordion.Header>Submission {submission ? "Details" : ""}</Accordion.Header>
                                 <Accordion.Body>
-                                    <div className="mt-3">
+                                    <div className="mt-1">
                                         <AssignmentSubmission
                                             submissions={submissions}
                                             exam_id={content_id}
@@ -114,7 +111,7 @@ const AssignmentViewPage = (props) => {
                             <Accordion.Item eventKey="0">
                                 <Accordion.Header>Faculty {isGradeReceived || submission?.grade_received ? "Feedback" : "Grading"}</Accordion.Header>
                                 <Accordion.Body>
-                                    <div className="mt-3">
+                                    <div className="mt-1">
                                         <FacultyGradingArea
                                             Student_ID={Student_ID}
                                             submissions={submissions}
@@ -135,6 +132,7 @@ const AssignmentViewPage = (props) => {
                         <Accordion.Body>
                             <div className="pb-2">
                                 <RenderContentFiles content={content} />
+                                <div className="text-black-50">Submission comments:</div>
                                 <div>{sanitizedHtml && <div className="content-body body mt-2" dangerouslySetInnerHTML={{ __html: sanitizedHtml === "<p><br></p>" ? "" : (sanitizedHtml) }} />}</div>
                             </div>
                         </Accordion.Body>

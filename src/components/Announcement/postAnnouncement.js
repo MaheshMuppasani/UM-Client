@@ -3,21 +3,66 @@ import ReactQuill from 'react-quill';
 import { Button, Form, Modal } from "react-bootstrap";
 import { toolbarOptions } from "../../assets/constants";
 
+const announcement_title_length = 10;
+const announcement_message_length = 10;
+
 const PostAnnouncement = (props) => {
     const { handleCreateContent } = props;
     const [value, setuserInfo] = useState('');
     const [contentName, setContentName] = useState('');
+    const [errors, setErrors] = useState({
+        contentName: "",
+        value: ""
+    })
 
 
     const handleContentName = (e) => {
-        setContentName(e.target.value);
+        let value = e.target.value;
+        if(value.trim().length >= announcement_title_length && errors.contentName){
+            setErrors({...errors, contentName: ""})
+        } 
+        setContentName(value);
+    }
+    const handleUserInfo = (text) => {
+        let editorPlainText = getPlainText(text).trim();
+        if(editorPlainText.length >= announcement_message_length && errors.value){
+            setErrors({...errors, value: ""})
+        }
+        return setuserInfo(text);
     }
     const module = {
         toolbar: toolbarOptions
     }
 
+    const getPlainText = (html) => {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        return doc.body.textContent || '';
+    };
+
+    const validateForm = () => {
+        let tempForm = { ...errors };
+        let valid = true;
+        let editorPlainText = getPlainText(value).trim();
+        if(editorPlainText.length < announcement_message_length){
+            valid = false;
+            tempForm.value = `Message should be atleast ${announcement_message_length} characters`
+        } else{
+            tempForm.value = "";
+        }
+        if(contentName.trim().length < announcement_title_length){
+            valid = false;
+            tempForm.contentName = `Title should be atleast ${announcement_title_length} characters`
+        } else{
+            tempForm.contentName = "";
+        }
+        return [valid, tempForm];
+    }
+
     const handleSubmit = (e) => {
-        return handleCreateContent(e, { value, contentName })
+        const [validForm, tempForm] = validateForm();
+        setErrors(tempForm);
+        if(!validForm) return;
+        return handleCreateContent(e, { value, contentName: contentName.trim() })
     }
 
     return (
@@ -42,9 +87,17 @@ const PostAnnouncement = (props) => {
                             type="text"
                             placeholder="Add a title to this announcement"
                             value={contentName}
+                            className={`form-control ${errors.contentName ? 'is-invalid' : ""}`}
                             onChange={handleContentName}
                             autoFocus
                         />
+                        <div className={`${errors.contentName ? "invalid-feedback" : ""}`}>
+                            {
+                                errors.contentName
+                                    ? errors.contentName
+                                    : <span aria-hidden="true" className="invisible">.</span>
+                            }
+                        </div>
                     </Form.Group>
                     <Form.Group
                         className="mb-3"
@@ -55,8 +108,17 @@ const PostAnnouncement = (props) => {
                             modules={module}
                             theme="snow"
                             value={value}
+                            className={`${errors.value ? 'is-invalid' : ""}`}
                             placeholder="Add announcement message"
-                            onChange={setuserInfo} />
+                            onChange={handleUserInfo} 
+                        />
+                        <div className={`${errors.value ? "invalid-feedback" : ""}`}>
+                            {
+                                errors.value
+                                    ? errors.value
+                                    : <span aria-hidden="true" className="invisible">.</span>
+                            }
+                        </div>
                     </Form.Group>
                 </Form>
             </Modal.Body>

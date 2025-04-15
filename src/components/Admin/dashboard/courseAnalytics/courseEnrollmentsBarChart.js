@@ -26,7 +26,7 @@ const options = {
     plugins: {
         title: {
             display: true,
-            text: 'Bar Chart Showing Most Enrolled Courses By Semester',
+            text: 'Bar Chart Showing Most Enrolled Courses By Semester (Current Semester)',
             position: 'bottom'
         },
         legend: {
@@ -34,12 +34,11 @@ const options = {
         },
         tooltip: {
             callbacks: {
-                // Customize the tooltip content
+                // Custom tooltip content
                 title: function (context) {
-                    const index = context[0].dataIndex; // Get the current data point index
+                    const index = context[0].dataIndex;
                     const dataset = context[0].dataset;
 
-                    // Use the fullLabels array for tooltips
                     return dataset.fullLabels[index];
                 }
             }
@@ -61,7 +60,7 @@ const CourseEnrollmentsBarChart = () => {
         datasets: []
     })
 
-    const [courseLimit, setcourseLimit] = useState(5)
+    const [courseLimit, setcourseLimit] = useState(10)
 
     const toggleLimit = () => setcourseLimit((prevLimit) => prevLimit === 5 ? 10 : 5)
 
@@ -90,8 +89,8 @@ const CourseEnrollmentsBarChart = () => {
         })
     }, [courseLimit])
 
-    return <div>
-        <button className='btn btn-sm' onClick={toggleLimit}>Top {courseLimit === 5 ? 10 : 5} Courses</button>
+    return <div className='h-100'>
+        <button className='btn btn-sm text-primary mx-2' onClick={toggleLimit}>Top {courseLimit === 5 ? 10 : 5} Courses</button>
         <Bar options={options} data={barData} plugins={barTitlePlugin} />
     </div>
 };

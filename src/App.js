@@ -3,12 +3,13 @@ import './App.css';
 import Login from './components/Login page/login';
 import RegisterStudent from './components/Student/studentRegistration';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import AppMainPage, { PageNotFound, RedirectToDefaultPage } from './components/app-main-page';
+import AppMainPage, { RedirectToDefaultPage } from './components/app-main-page.js';
 import axiosInstance from "../src/axiosInstance.js";
 import { URLS } from './assets/urlConstants.js';
 import { useConstants } from './constantsProvider.js';
 import { useToast } from './AppToast.js';
 import { feedBackType, userFeedback } from './assets/constants.js';
+import AppLoader from './app-loader.js';
 
 function App() {
 
@@ -19,7 +20,6 @@ function App() {
 
 
   useEffect(() => {
-
     axiosInstance.get(URLS.getAllConstants)
       .then(data => {
         setAppConstants(data.data);
@@ -40,6 +40,8 @@ function App() {
   }, [])
 
   return (
+    <>
+    <AppLoader />    
     <Router>
       <div className="App">
         <Switch>
@@ -56,6 +58,7 @@ function App() {
         </Switch>
       </div>
     </Router>
+    </>
   );
 }
 

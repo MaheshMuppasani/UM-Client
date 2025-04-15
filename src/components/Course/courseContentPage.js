@@ -19,42 +19,42 @@ const CourseContentPage = (props) => {
 
     return (
         <div className="maxHeight">
-            <ul class="nav nav-tabs">
-                <li class="nav-item">
+            <ul className="nav nav-tabs">
+                <li className="nav-item">
                     <button
-                        class={`w-100 nav-link text-center ${tabSelected == 1 ? 'active' : ''}`}
+                        className={`w-100 nav-link text-center ${tabSelected == 1 ? 'active' : ''}`}
                         onClick={handleTabClick}
                         value={1}
                     >Announcements</button>
                 </li>
-                <li class="nav-item">
+                <li className="nav-item">
                     <button
-                        class={`w-100 nav-link text-center ${tabSelected == 0 ? 'active' : ''}`}
+                        className={`w-100 nav-link text-center ${tabSelected == 0 ? 'active' : ''}`}
                         onClick={handleTabClick}
                         value={0}
                     >Content</button>
                 </li>
-                <li class="nav-item">
+                <li className="nav-item">
                     <button
-                        class={`w-100 nav-link text-center ${tabSelected == 5 ? 'active' : ''}`}
+                        className={`w-100 nav-link text-center ${tabSelected == 5 ? 'active' : ''}`}
                         onClick={handleTabClick}
                         value={5}
                     >Assignments</button>
                 </li>
                 {
                     !isStudent() && (
-                        <li class="nav-item">
+                        <li className="nav-item">
                             <button
-                                class={`w-100 nav-link text-center ${tabSelected == 4 ? 'active' : ''}`}
+                                className={`w-100 nav-link text-center ${tabSelected == 4 ? 'active' : ''}`}
                                 onClick={handleTabClick}
                                 value={4}
                             >Assignment Submissions</button>
                         </li>
                     )
                 }
-                <li class="nav-item">
+                <li className="nav-item">
                     <button
-                        class={`w-100 nav-link text-center ${tabSelected == 3 ? 'active' : ''}`}
+                        className={`w-100 nav-link text-center ${tabSelected == 3 ? 'active' : ''}`}
                         onClick={handleTabClick}
                         value={3}
                     >Grades</button>

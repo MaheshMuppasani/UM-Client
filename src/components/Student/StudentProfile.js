@@ -57,7 +57,7 @@ const StudentProfile = (props) => {
             'Program Type': getProgramType(profile.ProgramTypeID, programTypes),
             'Program': getProgram(profile.ProgramID, programs),
             'Major': getProgram(profile.ProgramID, programs),
-            'CGPA': profile.GPA ? <span class="badge px-3 fs-6" style={{ backgroundColor: getColorForGrade(parseFloat(profile.GPA), 4) }}>{profile.GPA}  / {4}</span> : "",
+            'CGPA': profile.GPA ? <span className="badge px-3 fs-6" style={{ backgroundColor: getColorForGrade(parseFloat(profile.GPA), 4) }}>{profile.GPA}  / {4}</span> : "",
             'Start Semester': getCurrentSem(profile.StartSemesterID, semesters) || null,
             'Credit Hours Completed': profile.CreditHoursCompleted || 0,
             'Credit Hours Enrolled This Semester': profile.CreditHoursEnrolled || 0,
@@ -75,14 +75,12 @@ const StudentProfile = (props) => {
 
     return (
         <div className="StudentProfile">
-            <h2 className="mb-4">
+            <h2 className="mb-3">
                 <p className="m-0 fw-lighter">Profile</p>
             </h2>
             <div>
                 <div className="basicInfo">
-                    {/* <h4> */}
-                        <p className="fs-4">Personal Information</p>
-                    {/* </h4> */}
+                    <p className="fs-4">Personal Information</p>
                     <table className="table studentInfo">
                         <tbody>
                             {

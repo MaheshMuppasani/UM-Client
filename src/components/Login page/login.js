@@ -134,8 +134,8 @@ const Login = (props) => {
                 <div className='login-form p-4 rounded'>
                     <p className="text-body-secondary text-center mb-5"><h4>Login Page</h4></p>
                     <form>
-                        <div class="mb-3">
-                            <label for="exampleInputEmail1" class="form-label">Email address<span className="text-danger">*</span></label>
+                        <div className="mb-3">
+                            <label for="exampleInputEmail1" className="form-label">Email address<span className="text-danger">*</span></label>
                             <input
                                 type="email"
                                 value={formState.email}
@@ -144,7 +144,7 @@ const Login = (props) => {
                                 id="exampleInputEmail1"
                                 aria-describedby="emailHelp"
                             />
-                            <div id="validationEmailFeedback" class={`${formState.emailError ? "invalid-feedback" : ""}`}>
+                            <div id="validationEmailFeedback" className={`${formState.emailError ? "invalid-feedback" : ""}`}>
                                 {
                                     formState.emailError
                                         ? formState.emailError
@@ -152,8 +152,8 @@ const Login = (props) => {
                                 }
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="exampleInputPassword1" class="form-label">Password<span className="text-danger">*</span></label>
+                        <div className="mb-3">
+                            <label for="exampleInputPassword1" className="form-label">Password<span className="text-danger">*</span></label>
                             <input
                                 type="password"
                                 value={formState.pw}
@@ -161,7 +161,7 @@ const Login = (props) => {
                                 className={`form-control ${formState.pwError ? 'is-invalid' : ""}`}
                                 id="exampleInputPassword1"
                             />
-                            <div id="validationCredentialsFeedback" class={`${formState.pwError ? "invalid-feedback" : ""}`}>
+                            <div id="validationCredentialsFeedback" className={`${formState.pwError ? "invalid-feedback" : ""}`}>
                                 {
                                     formState.pwError
                                         ? formState.pwError
@@ -169,7 +169,7 @@ const Login = (props) => {
                                 }
                             </div>
                         </div>
-                        <button type="submit" class="mb-3 px-4 submit btn btn-primary" onClick={login}>Login</button>
+                        <button type="submit" className="mb-3 px-4 submit btn btn-primary" onClick={login}>Login</button>
                         <div className="mb-2 text-end"><a href={ROUTES.REGISTER_STUDENT}>Click here to register now!</a></div>
                         <div className="mb-2 text-end"><a href={ROUTES.HOME} onClick={forgotPassword}>Forgot password?</a></div>
                     </form>
