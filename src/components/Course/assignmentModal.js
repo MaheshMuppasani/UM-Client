@@ -30,6 +30,7 @@ const NewAssignmentModal = (props) => {
     const title_min_length = 10;
     const instructions_min_length = 10;
     const max_score_value = 100;
+    const DUE_DATE_TIME_ERROR = "Due date/time is behind";
 
     const getPlainText = (html) => {
         const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -45,15 +46,37 @@ const NewAssignmentModal = (props) => {
     }
 
     const handleDueDateChange = (e) => {
-        setDueDate(e.target.value);
-        if(e.target.value && errors.dueDate){
+        const selectedDate = e.target.value;
+        setDueDate(selectedDate);
+        
+        if(selectedDate) {
+            const now = new Date();
+            const selectedDateTime = new Date(`${selectedDate}T${dueTime || '23:59:59'}`);
+            
+            if(selectedDateTime < now) {
+                setErrors({...errors, dueDate: DUE_DATE_TIME_ERROR});
+            } else {
+                setErrors({...errors, dueDate: "", dueTime: ""});
+            }
+        } else {
             setErrors({...errors, dueDate: ""});
         }
     }
 
     const handleDueTimeChange = (e) => {
-        setDueTime(e.target.value);
-        if(e.target.value && errors.dueTime){
+        const selectedTime = e.target.value;
+        setDueTime(selectedTime);
+        
+        if(selectedTime && dueDate) {
+            const now = new Date();
+            const selectedDateTime = new Date(`${dueDate}T${selectedTime}`);
+            
+            if(selectedDateTime < now) {
+                setErrors({...errors, dueTime: DUE_DATE_TIME_ERROR});
+            } else {
+                setErrors({...errors, dueTime: "", dueDate: ""});
+            }
+        } else {
             setErrors({...errors, dueTime: ""});
         }
     }
@@ -82,6 +105,7 @@ const NewAssignmentModal = (props) => {
         let tempForm = { ...errors };
         let valid = true;
         let editorPlainText = getPlainText(value).trim();
+        const now = new Date();
 
         // Validate assignment title
         if(contentName.trim().length < title_min_length){
@@ -96,15 +120,30 @@ const NewAssignmentModal = (props) => {
             valid = false;
             tempForm.dueDate = "Due date is required";
         } else {
-            tempForm.dueDate = "";
+            const selectedDate = new Date(`${dueDate}T${dueTime || '23:59:59'}`);
+            
+            if(selectedDate < now) {
+                valid = false;
+                tempForm.dueDate = DUE_DATE_TIME_ERROR;
+                tempForm.dueTime = DUE_DATE_TIME_ERROR;
+            } else {
+                tempForm.dueDate = "";
+                tempForm.dueTime = "";
+            }
         }
 
         // Validate due time
         if(!dueTime){
             valid = false;
             tempForm.dueTime = "Due time is required";
-        } else {
-            tempForm.dueTime = "";
+        } else if(!tempForm.dueTime) {
+            const selectedTime = new Date(`${dueDate}T${dueTime}`);
+            if(selectedTime < now) {
+                valid = false;
+                tempForm.dueTime = "Due time cannot be in the past";
+            } else {
+                tempForm.dueTime = "";
+            }
         }
 
         // Validate max score
@@ -196,6 +235,7 @@ const NewAssignmentModal = (props) => {
                                 className={`form-control ${errors.dueDate ? 'is-invalid' : ""}`}
                                 onChange={handleDueDateChange}
                                 min={fetchDueDateTime(new Date()).formattedDate()}
+                                onBlur={handleDueDateChange}
                             />
                             <div className={`${errors.dueDate ? "invalid-feedback" : ""}`}>
                                 {
@@ -212,6 +252,7 @@ const NewAssignmentModal = (props) => {
                                 value={dueTime}
                                 className={`form-control ${errors.dueTime ? 'is-invalid' : ""}`}
                                 onChange={handleDueTimeChange}
+                                onBlur={handleDueTimeChange}
                             />
                             <div className={`${errors.dueTime ? "invalid-feedback" : ""}`}>
                                 {
