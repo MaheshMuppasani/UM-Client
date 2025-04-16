@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
 import { URLS } from "../../../assets/urlConstants";
 import axiosInstance from "../../../axiosInstance";
 import AdminCourseTable from "./adminCourseTable";
-import AdminCourseSearch from "./adminCourseSearch";
 import AddCourseModal from "./AddCourseModal";
 import { useConstants } from "../../../constantsProvider";
 import { useToast } from "../../../AppToast";

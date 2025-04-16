@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { Accordion, Button, Form } from "react-bootstrap";
 import axiosInstance from "../../../axiosInstance";
-import { dateFormat, formatDate, formatDateToLocaleString } from "../../../utils/utils";
+import { dateFormat, formatDateToLocaleString } from "../../../utils/utils";
 import { BackIcon } from "../../../assets/constants";
 import { setExamDataAsContent } from "../courseAssignments";
 import AssignmentViewPage from "../AssignmentViewPage";
 import { URLS } from "../../../assets/urlConstants";
-import { useUserRole } from "../../../userRole";
 
 const AssignmentSubmissionsTab = (props) => {
     const { selectedSection } = props;

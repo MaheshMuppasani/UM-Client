@@ -130,7 +130,7 @@ const NewAssignmentModal = (props) => {
         const [validForm, tempForm] = validateForm();
         setErrors(tempForm);
         if(!validForm) return;
-        return handleCreateContent(e, { value, contentName, editContent, file, dueDate: `${dueDate}T${dueTime}`, maxScore });
+        return handleCreateContent(e, { value, contentName, editContent, file, dueDate: new Date(`${dueDate}T${dueTime}`).toISOString(), maxScore });
     }
 
     const handleFileChange = (e) => {

@@ -8,7 +8,6 @@ import { useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import { formDataHeaders, URLS } from "../../assets/urlConstants";
 import { useUserRole } from "../../userRole";
-import { fetchDueDateTime } from "../../utils/utils";
 
 const AssignmentSubmission = (props) => {
     const { submissions, cancelSubmission, exam_id, SectionID } = props;
@@ -83,10 +82,7 @@ const AssignmentSubmission = (props) => {
             section_id: SectionID,
             file: file,
             submission_text: value && value!=='<p><br></p>' ? value : null,
-            submitted_date: (function(){
-                let current_date = fetchDueDateTime(new Date());
-                return `${current_date.formattedDate()}T${current_date.formattedTime()}`
-            })() // get the current moment
+            submitted_date: new Date().toISOString()
         }
         axiosInstance.post(url, data, formDataHeaders)
             .then(res => {
