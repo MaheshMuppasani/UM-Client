@@ -104,24 +104,22 @@ const AssignmentSubmission = (props) => {
                     controlId="exampleForm.ControlTextarea1"
                 >
                     {
-                        submissions.length ? 
-                            <p className="mb-2 text-black-50">Files Attached:
-                                {submissions[0].file_id ? 
-                                    <RenderContentFiles content={{ file_id: submissions[0].file_id }} /> 
-                                    : <div className="fw-light fst-italic text-secondary d-inline-block mx-2">None</div>}
-                            </p>
+                        submissions.length ?
+                            (submissions[0].file_id ?
+                                <RenderContentFiles content={{ file_id: submissions[0].file_id }} />
+                                : <div className="fw-light fst-italic text-secondary d-inline-block mx-2">None</div>)
                             : (
-                            <>
-                                <Form.Label className="text-black-50">Choose or drag files here:</Form.Label>
-                                <Form.Control
-                                    type="file"
-                                    placeholder="upload your file"
-                                    id="fileInput"
-                                    ref={fileInputRef}
-                                    onChange={handleFileChange}
-                                    className="mb-3"
-                                />
-                            </>)
+                                <>
+                                    <Form.Label className="text-black-50">Choose or drag files here:</Form.Label>
+                                    <Form.Control
+                                        type="file"
+                                        placeholder="upload your file"
+                                        id="fileInput"
+                                        ref={fileInputRef}
+                                        onChange={handleFileChange}
+                                        className="mb-3"
+                                    />
+                                </>)
                     }
                     <Form.Label className="text-black-50">Submission comments:</Form.Label>
                     {
