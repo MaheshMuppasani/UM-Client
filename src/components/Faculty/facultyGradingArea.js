@@ -147,25 +147,23 @@ const FacultyGradingArea = (props) => {
                     }
                     
                     {
-                        submissions[0]?.grade_received ? 
-                            <p className="mb-2 text-black-50">Files Attached:
-                                {submissions[0].feedback_fileID 
-                                ? <RenderContentFiles content={{ file_id: submissions[0].feedback_fileID }} /> 
-                                : <div className="fw-light fst-italic text-secondary d-inline-block mx-2">None</div>} 
-                            </p>
+                        submissions[0]?.grade_received ?
+                            (submissions[0].feedback_fileID
+                                ? <RenderContentFiles content={{ file_id: submissions[0].feedback_fileID }} />
+                                : <div className="fw-light fst-italic text-secondary d-inline-block mx-2">None</div>)
                             : (
-                            <>
-                                <Form.Label className="text-black-50">Upload Feedback file</Form.Label>
-                                <Form.Control
-                                    type="file"
-                                    placeholder="upload your file"
-                                    id="fileInput"
-                                    ref={fileInputRef}
-                                    onChange={handleFileChange}
-                                    className="mb-3"
-                                />
-                            </>
-                        )
+                                <>
+                                    <Form.Label className="text-black-50">Upload Feedback file</Form.Label>
+                                    <Form.Control
+                                        type="file"
+                                        placeholder="upload your file"
+                                        id="fileInput"
+                                        ref={fileInputRef}
+                                        onChange={handleFileChange}
+                                        className="mb-3"
+                                    />
+                                </>
+                            )
                     }
                     <Form.Label className="text-black-50">Feedback comments:</Form.Label>
                     {
