@@ -9,7 +9,6 @@ import StudentEnrollment from './Student/studentEnrollment.js';
 import StudentCourses from './Student/studentCourses.js';
 import FacultyProfile from './Faculty/facultyProfile.js';
 import FacultyCourses from './Faculty/facultyCourses.js';
-import FacultyAnnouncement from './Faculty/facultyAnnouncement.js';
 import { RoleBasedRoute, useUserRole } from '../userRole.js';
 import { URLS } from '../assets/urlConstants.js';
 import AdminProgramsPage from './Admin/programs/adminProgramsPage.js';
@@ -21,7 +20,7 @@ import AdminDashboard from "./Admin/dashboard/dashboard.js";
 import { useConstants } from "../constantsProvider.js";
 
 export const PageNotFound = ({text}) => {
-  return <h1>Page Not Found {text}</h1>;
+  return <h1>{text || "404 Page Not Found"}</h1>;
 };
 
 export const RedirectToDefaultPage = () => {
@@ -94,13 +93,10 @@ const AppMainPage = (props) => {
             </h2>
           </div>
           <div className='d-flex align-items-center column-gap-1'>
-            {
-              <span className='profileRole'>{roleBasedUserIcon(profile.role)}</span>
-            }
+            <span className='profileRole'>{roleBasedUserIcon(profile.role)}</span>
             {
               profile && profile.FirstName && <h5 className='m-0 mx-2'>Welcome, {profile.FirstName}</h5>
             }
-
             <button className='profile-icon btn rounded-circle border btn-secondary px-0 fs-5'>{shortName ? shortName : ''}</button>
 
           </div>
@@ -114,7 +110,7 @@ const AppMainPage = (props) => {
               <RoleBasedRoute rolesToComponents={{1: StudentProfile, 2: FacultyProfile, 3: FacultyProfile}} />
             </Route>
             <Route path='/enrollments'>
-              <StudentEnrollment />
+              <RoleBasedRoute rolesToComponents={{1: StudentEnrollment}} />
             </Route>
             <Route path='/courses'>
               <RoleBasedRoute rolesToComponents={{1: StudentCourses, 2: FacultyCourses, 3: AdminCourseRouter}} />
@@ -128,15 +124,12 @@ const AppMainPage = (props) => {
             <Route path='/dashboard'>
               <RoleBasedRoute rolesToComponents={{3: AdminDashboard}} />
             </Route>
-            <Route path="/announcements">
-              <FacultyAnnouncement />
-            </Route>
             <Route path="/calendar">
               <CalendarPage />
             </Route>
             <Route path="/" exact><RedirectToDefaultPage /></Route>
-            <Route path="/unauthorized"><PageNotFound text={'Main UNA'} /></Route>
-            <Route path="*" ><PageNotFound text={'Main NF'}/></Route>
+            <Route path="/unAuthorized"><PageNotFound text={"401 Access Denied"} /></Route>
+            <Route path="*" ><PageNotFound /></Route>
           </Switch>
         </div>
       </div>

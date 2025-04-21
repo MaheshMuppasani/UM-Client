@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, createContext, useContext } from 'react';
 import './App.css';
 import Login from './components/Login page/login';
 import RegisterStudent from './components/Student/studentRegistration';
 import { BrowserRouter as Router, Route, Switch, useHistory } from 'react-router-dom';
-import AppMainPage, { RedirectToDefaultPage } from './components/app-main-page.js';
+import AppMainPage from './components/app-main-page.js';
 import axiosInstance from "../src/axiosInstance.js";
 import { URLS } from './assets/urlConstants.js';
 import { useConstants } from './constantsProvider.js';
@@ -11,12 +11,17 @@ import { useToast } from './AppToast.js';
 import { feedBackType, userFeedback } from './assets/constants.js';
 import AppLoader from './app-loader.js';
 
-function AppContainer() {
-  return (
-    <Router>
-      <App />
-    </Router>
-  );
+const MobileContext = createContext(false);
+
+function DesktopOnlyRoute({ children }) {
+  const isMobile = useContext(MobileContext);
+  const history = useHistory();
+
+  useEffect(() => {
+    if (isMobile) history.replace('/mobile-not-supported');
+  }, [isMobile, history]);
+
+  return !isMobile ? children : null;
 }
 
 function UnSupportedDeviceTemplate() {
@@ -38,15 +43,17 @@ function UnSupportedDeviceTemplate() {
 }
 
 function App() {
+  const [toastID, setToastID] = useState(null);
+  const [isUnSupportedUA, setIsUnSupportedUA] = useState(false);
   const history = useHistory();
   const { setAppConstants } = useConstants();
   const { addToast, clearToast } = useToast();
-  const [toastID, setToastID] = useState(null);
   const toastRef = { current: toastID };
 
   useEffect(() => {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     if (isMobile && !window.location.pathname.includes('/mobile-not-supported')) {
+      setIsUnSupportedUA(true);
       history.push('/mobile-not-supported');
     }
   }, [history]);
@@ -72,28 +79,33 @@ function App() {
   }, [setAppConstants, addToast, clearToast]);
 
   return (
-    <>
-      <AppLoader />    
+    <MobileContext.Provider value={isUnSupportedUA}>
+      {!isUnSupportedUA && <AppLoader />}
       <div className="App">
         <Switch>
-          <Route path='/login' exact>
-            <Login />
-          </Route>
-          <Route path='/register' exact>
-            <RegisterStudent />
-          </Route>
           <Route path='/mobile-not-supported' exact>
             <UnSupportedDeviceTemplate />
+          </Route>
+            <Route path='/login' exact>
+              <DesktopOnlyRoute><Login /></DesktopOnlyRoute>  
+            </Route>
+          <Route path='/register' exact>
+            <RegisterStudent />
           </Route>
           <Route path='/'>
             <AppMainPage />
           </Route>
-          <Route path="/" exact>
-            <RedirectToDefaultPage />
-          </Route>
         </Switch>
       </div>
-    </>
+    </MobileContext.Provider>
+  );
+}
+
+function AppContainer() {
+  return (
+    <Router>
+      <App />
+    </Router>
   );
 }
 

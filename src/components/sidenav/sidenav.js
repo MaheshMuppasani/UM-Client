@@ -41,7 +41,7 @@ const SideNav = (props) => {
             if (location.pathname.startsWith('/programs')) return 8;
             if (location.pathname.startsWith('/calendar')) return 9;
             if (location.pathname.startsWith('/dashboard')) return 10;
-            return 0; // Default tab
+            return null; // Default tab
         })
     }, [location.pathname])
 

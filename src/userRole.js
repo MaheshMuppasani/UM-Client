@@ -28,5 +28,5 @@ export const RoleBasedRoute = ({ rolesToComponents, ...forwardProps }) => {
   const { userRole } = useUserRole();
   if(!userRole) return <Redirect to="/login" />
   const Component = rolesToComponents[userRole] || null;
-  return Component ? <Component {...forwardProps}/> : <Redirect to="/unauthorized" />;
+  return Component ? <Component {...forwardProps}/> : <Redirect to="/unAuthorized" />;
 };
