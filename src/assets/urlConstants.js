@@ -41,7 +41,7 @@ export const URLS = {
     facultyME: '/faculty/me',
     getFacultyCoursesBySemester: "/faculty/getCoursesBySemester",
     getFacultiesByProgramID: "/faculty/getFacultiesByProgramID",
-
+    getAllStudentDetailsOfSection: "/faculty/getAllStudentDetailsOfSection",
 
     studentME: '/students/me',
     getCoursesBySemester: "/students/getCoursesBySemester",
@@ -69,7 +69,6 @@ export const URLS = {
     addNewTeachingSection: "/admin/addNewTeachingSection",
     editTeachingSection: "/admin/editTeachingSection",
 
-    getAllStudentDetailsOfSection: "/admin/getAllStudentDetailsOfSection",
     checkAllGradesWerePosted: '/admin/checkAllGradesWerePosted',
     updateCourseEnrollmentsStatus: '/admin/updateCourseEnrollmentsStatus',
     saveProgressAndChangeSemester: '/admin/saveProgressAndChangeSemester',

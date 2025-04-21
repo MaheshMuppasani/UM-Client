@@ -123,7 +123,7 @@ export const FacultyInfoCard = (props) => {
 }
 
 const CourseTeachingSectionInfo = (props) => {
-    const { Section } = props;
+    const { Section, hideFacultyInfo = false } = props;
 
     const { Section_ID = null, Section_DeliveryMode, is_section_open, Faculty_ID, SemesterID, FacultyName, Capacity } = Section;
 
@@ -155,7 +155,9 @@ const CourseTeachingSectionInfo = (props) => {
             </div>
         </div>
         <div className="p-2 maxHeight">
-            <FacultyInfoCard Faculty_ID={Faculty_ID} />
+            {
+                !hideFacultyInfo ? <FacultyInfoCard Faculty_ID={Faculty_ID} /> : ("")
+            }
             <SectionEnrollmentsCard Section_ID={Section_ID} />
         </div>
     </div>);

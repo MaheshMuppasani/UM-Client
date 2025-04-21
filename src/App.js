@@ -76,7 +76,7 @@ function App() {
     return () => {
       if (toastRef.current) clearToast(toastRef.current);
     };
-  }, [setAppConstants, addToast, clearToast]);
+  }, []);
 
   return (
     <MobileContext.Provider value={isUnSupportedUA}>

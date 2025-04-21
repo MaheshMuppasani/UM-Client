@@ -9,15 +9,16 @@ import { useConstants } from "../../constantsProvider";
 import { FacultyIcon } from "../../assets/constants";
 import { commaSeperateFullName } from "../Student/studentEnrollment";
 import { useUserRole } from "../../userRole";
-import { Dropdown, DropdownButton } from "react-bootstrap";
+import { Button, Dropdown, DropdownButton } from "react-bootstrap";
+import CourseTeachingSectionInfo from "../Admin/course/courseTeachingSectionInfo";
 
-const CourseSection = ({ section, handleSectionSelect, course, handleEdit, handleDelete, selectedSectionId = null }) => {
+const CourseSection = ({ section, handleSectionSelect, course, handleEdit, handleDelete, handleOpenInfo, selectedSectionId = null }) => {
     const { Section_ID, Section_DeliveryMode, Capacity, EnrollmentCount, FacultyName = "", is_section_open = 0 } = section;
     const { courseID, Course_Name, CreditHours, sections, course_code } = course;
 
-    const { isAdmin } = useUserRole();
+    const { isAdmin, isFaculty } = useUserRole();
 
-    const handleSection = (e) => {
+    const handleSelect = (e) => {
         return handleSectionSelect(e, section, course);
     }
 
@@ -29,8 +30,10 @@ const CourseSection = ({ section, handleSectionSelect, course, handleEdit, handl
         handleDelete(e, section);
     }
 
+    const onOpen = (e) => handleOpenInfo(e, section, course)
+
     return (
-        <div className={`card courseCard ${selectedSectionId===Section_ID? 'active' : ''}`} onClick={handleSection}>
+        <div className={`card courseCard ${selectedSectionId===Section_ID? 'active' : ''}`} onClick={handleSelect}>
             <div className="card-body">
                 <div className={`d-flex gap-5 flex-grow-1 justify-content-between`}>
                     <h6 className="card-title d-flex gap-5">
@@ -54,6 +57,11 @@ const CourseSection = ({ section, handleSectionSelect, course, handleEdit, handl
                                 <Dropdown.Item as="button" onClick={onEdit}>Edit Teaching Section</Dropdown.Item>
                                 <Dropdown.Item as="button" onClick={onDelete}>Delete Teaching Section</Dropdown.Item>
                             </DropdownButton>
+                        ) : ("")
+                    }
+                    {
+                        isFaculty() ? (
+                            <Button size="sm" variant="secondary" className="d-flex px-3" onClick={onOpen}>Go To Section</Button>
                         ) : ("")
                     }
                 </div>
@@ -140,6 +148,7 @@ export const groupCoursesBySemesters = (acc, curr) => {
 const FacultyCourses = (props) => {
     const [courses, setCourses] = useState([]);
     const [selectedSection, setSelectedSection] = useState({});
+    const [sectionInfo, setSectionInfo] = useState({});
     const [contentStack, setContentStack] = useState([]);
 
     const getFacultyCourses = () => {
@@ -162,7 +171,12 @@ const FacultyCourses = (props) => {
         setContentStack(tempContent)
     }
 
-    const handleSectionSelect = (e, section, course) => {
+    const setShowInfo = (e, section) => {
+        e.stopPropagation();
+        setSectionInfo(section);
+    }
+
+    const handleOpenSection = (e, section, course) => {
         e.stopPropagation();
         setContentStack([]);
         if (section)
@@ -182,7 +196,7 @@ const FacultyCourses = (props) => {
     return (
         <div className="StudentProfile">
             <h2 className="d-flex align-items-baseline gap-3">
-                <p className={`sectionClick fw-lighter ${selectedSection.Section_ID ? 'text-primary' : ''}`} onClick={handleSectionSelect}>Courses</p>
+                <p className={`sectionClick fw-lighter ${selectedSection.Section_ID ? 'text-primary' : ''}`} onClick={handleOpenSection}>Courses</p>
                 {
                     selectedSection.Section_ID ? (
                         <CourseBreadCrumbs
@@ -203,12 +217,25 @@ const FacultyCourses = (props) => {
                         popContent={popContent}
                     />
                 ) : (
-                    <div className="maxHeight">
-                        {courses.length ?
-                            <SemesterCourses
-                                handleSectionSelect={handleSectionSelect}
-                                courses={courses}
-                            /> : <p className="fw-lighter text-center my-auto">You don't have any courses</p>}
+                    <div className="d-flex maxHeight flex-row">
+                        <div className="flex-grow-1">
+                            {courses.length ?
+                                <SemesterCourses
+                                    handleSectionSelect={setShowInfo}
+                                    courses={courses}
+                                    handleOpenInfo={handleOpenSection}
+                                    selectedSectionId={sectionInfo ? sectionInfo.Section_ID : null}
+                                /> : <p className="fw-lighter text-center my-auto">You don't have any courses</p>}
+                        </div>
+                        <div className="maxHeight border" style={{ maxWidth: '330px', width: '330px', marginTop: '50px', marginLeft: '10px', position: 'sticky', top: '50px' }}>
+                            <div className="maxHeight" style={{ fontSize: '0.85em' }}>
+                                {
+                                    sectionInfo && sectionInfo.Section_ID 
+                                        ? <CourseTeachingSectionInfo Section={sectionInfo} hideFacultyInfo={true} />
+                                        : <div className="maxHeight align-items-center justify-content-center text-secondary fw-light text-center">Select a teaching section to view its details</div>
+                                }
+                            </div>
+                        </div>
                     </div>
                 )
             }
